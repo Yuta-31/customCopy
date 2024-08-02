@@ -3,15 +3,17 @@ import type { CustomCopyContextMenu } from "~types"
 export const ContextMenuRow = ({
   idx,
   contextMenu,
-  setContextMenu
+  setContextMenuItem,
+  deleteContextMenu
 }: {
   idx: number
   contextMenu: CustomCopyContextMenu
-  setContextMenu: (
+  setContextMenuItem: (
     idx: number,
     key: keyof CustomCopyContextMenu,
     value: string | string[]
   ) => void
+  deleteContextMenu: (idx: number) => void
 }) => {
   return (
     <div key={idx} className="row">
@@ -22,7 +24,7 @@ export const ContextMenuRow = ({
             <input
               value={contextMenu[key]}
               onChange={(e) => {
-                setContextMenu(
+                setContextMenuItem(
                   idx,
                   key as "id" | "title" | "type" | "contexts",
                   e.target.value
@@ -38,11 +40,17 @@ export const ContextMenuRow = ({
           <textarea
             value={contextMenu.clipboardText}
             onChange={(e) => {
-              setContextMenu(idx, "clipboardText", e.target.value)
+              setContextMenuItem(idx, "clipboardText", e.target.value)
             }}
           />
         </label>
       </div>
+      <button
+        onClick={() => {
+          deleteContextMenu(idx)
+        }}>
+        delete
+      </button>
     </div>
   )
 }

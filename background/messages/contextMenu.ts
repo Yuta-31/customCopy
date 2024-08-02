@@ -8,17 +8,18 @@ export const handleContextMenu = (message: Message) => {
       console.log("contextMenu on-load")
       ;(async () => {
         const contextMenus = await storage.get("contextMenus")
-        chrome.contextMenus.removeAll()
-        if (Array.isArray(contextMenus)) {
-          contextMenus.forEach((element) => {
-            const res = chrome.contextMenus.create({
-              id: element.id,
-              title: element.title,
-              type: element.type,
-              contexts: element.contexts
+        chrome.contextMenus.removeAll(() => {
+          if (Array.isArray(contextMenus)) {
+            contextMenus.forEach((element) => {
+              const res = chrome.contextMenus.create({
+                id: element.id,
+                title: element.title,
+                type: element.type,
+                contexts: element.contexts
+              })
             })
-          })
-        }
+          }
+        })
       })()
   }
 }

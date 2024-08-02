@@ -25,10 +25,13 @@ const OptionsIndex = () => {
   }, [])
 
   useEffect(() => {
-    console.log("contextMenus", contextMenus)
+    ;(async () => {
+      await storage.set("contextMenus", contextMenus)
+    })()
+    console.log(contextMenus)
   }, [contextMenus])
 
-  const setContextMenu = (
+  const setContextMenuItem = (
     idx: number,
     key: "title" | "type" | "contexts",
     value: string | string[]
@@ -42,6 +45,12 @@ const OptionsIndex = () => {
     setContextMenus(newContextMenus)
   }
 
+  const deleteContextMenu = (idx: number) => {
+    const newContextMenus = [...contextMenus]
+    newContextMenus.splice(idx, 1)
+    setContextMenus(newContextMenus)
+  }
+
   return (
     <div>
       {!!contextMenus &&
@@ -50,7 +59,8 @@ const OptionsIndex = () => {
             <ContextMenuRow
               idx={idx}
               contextMenu={contextMenu}
-              setContextMenu={setContextMenu}
+              setContextMenuItem={setContextMenuItem}
+              deleteContextMenu={deleteContextMenu}
             />
           </div>
         ))}
@@ -58,7 +68,7 @@ const OptionsIndex = () => {
         onClick={() => {
           const newContextMenus = [...contextMenus]
           newContextMenus.push({
-            id: `custom-copy-${newContextMenus.length}`,
+            id: `custom-copy-${Date.now()}`,
             title: "",
             type: "normal",
             contexts: ["selection"],
@@ -67,15 +77,6 @@ const OptionsIndex = () => {
           setContextMenus(newContextMenus)
         }}>
         click
-      </button>
-      <button
-        onClick={() => {
-          console.log("save")
-          ;(async () => {
-            await storage.set("contextMenus", contextMenus)
-          })()
-        }}>
-        save
       </button>
     </div>
   )
