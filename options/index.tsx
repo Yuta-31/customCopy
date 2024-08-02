@@ -51,6 +51,18 @@ const OptionsIndex = () => {
     setContextMenus(newContextMenus)
   }
 
+  const createEmptyContextMenu = () => {
+    const newContextMenus = [...contextMenus]
+    newContextMenus.push({
+      id: `custom-copy-${Date.now()}`,
+      title: "",
+      type: "normal",
+      contexts: ["selection"],
+      clipboardText: ""
+    })
+    setContextMenus(newContextMenus)
+  }
+
   return (
     <div>
       {!!contextMenus &&
@@ -64,20 +76,7 @@ const OptionsIndex = () => {
             />
           </div>
         ))}
-      <button
-        onClick={() => {
-          const newContextMenus = [...contextMenus]
-          newContextMenus.push({
-            id: `custom-copy-${Date.now()}`,
-            title: "",
-            type: "normal",
-            contexts: ["selection"],
-            clipboardText: ""
-          })
-          setContextMenus(newContextMenus)
-        }}>
-        click
-      </button>
+      <button onClick={createEmptyContextMenu}>click</button>
     </div>
   )
 }
