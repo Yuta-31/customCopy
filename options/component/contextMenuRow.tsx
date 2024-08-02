@@ -36,7 +36,6 @@ export const ContextMenuRow = ({
         <label>
           <span>clipboardText:</span>
           <textarea
-            style={{ verticalAlign: "top" }}
             value={contextMenu.clipboardText}
             onChange={(e) => {
               setContextMenu(idx, "clipboardText", e.target.value)
