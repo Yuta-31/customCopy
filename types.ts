@@ -4,3 +4,7 @@ export type Message = {
   command: string
   data?: any
 }
+
+export type CustomCopyContextMenu = chrome.contextMenus.CreateProperties & {
+  clipboardText: string
+}

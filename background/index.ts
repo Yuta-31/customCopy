@@ -7,21 +7,23 @@ import { handleContextMenu } from "./messages/contextMenu"
 // create storage
 export const storage = new Storage()
 ;(async () => {
-  await storage.set("contextMenus", [
-    {
-      id: "copy-for-reference-in-mail",
-      title: "mail",
-      type: "normal",
-      contexts: ["selection"]
-    },
-    {
-      id: "copy-for-reference-in-markdown",
-      title: "markdown",
-      type: "normal",
-      contexts: ["selection"]
-    }
-  ])
-  // add contextMenu
+  // await storage.set("contextMenus", [
+  //   {
+  //     id: "copy-for-reference-in-mail",
+  //     title: "mail",
+  //     type: "normal",
+  //     contexts: ["selection"],
+  //     clipboardText:
+  //       "<参考情報> \nTitle: ${title} \nURL: ${url} \n該当部分: \n${selectionText} \n---"
+  //   },
+  //   {
+  //     id: "copy-for-reference-in-markdown",
+  //     title: "markdown",
+  //     type: "normal",
+  //     contexts: ["selection"],
+  //     clipboardText: "[${title}](${url}) \n> ${selectionText}"
+  //   }
+  // ])
 })()
 
 // add message listener
