@@ -1,3 +1,5 @@
+import type { Message } from "~types"
+
 export {}
 
 const create_reference_for_mail = (title, url, selectionText) => {
@@ -17,28 +19,15 @@ const create_reference_for_markdown = (title, url, selectionText) => {
 }
 
 window.addEventListener("load", () => {
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    const selectedText = window.getSelection().toString()
-    if (selectedText) {
-      const result = (() => {
-        switch (message.command) {
-          case "copy-for-reference-in-mail":
-            return create_reference_for_mail(
-              message.title,
-              message.url,
-              selectedText
-            )
-          case "copy-for-reference-in-markdown":
-            return create_reference_for_markdown(
-              message.title,
-              message.url,
-              selectedText
-            )
-        }
-      })()
+  chrome.runtime.onMessage.addListener(
+    (message: Message, sender, sendResponse) => {
+      console.log(message)
+      if (message.type !== "contextMenu") return
+      if (message.command !== "on-click") return
+      const result = message.data.replacedText
       navigator.clipboard.writeText(result)
     }
-  })
+  )
   chrome.runtime.sendMessage({
     type: "contextMenu",
     command: "on-load"

@@ -1,6 +1,6 @@
 import { Storage } from "@plasmohq/storage"
 
-import type { Message } from "~types"
+import type { CustomCopyContextMenu, Message } from "~types"
 
 import { handleContextMenu } from "./messages/contextMenu"
 
@@ -44,10 +44,22 @@ chrome.runtime.onMessage.addListener(
 // add contextMenu event
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   ;(async () => {
-    chrome.tabs.sendMessage(tab.id, {
-      command: info.menuItemId,
-      title: tab.title,
-      url: tab.url
+    const contextMenus: Array<CustomCopyContextMenu> =
+      await storage.get("contextMenus")
+    contextMenus.forEach((element) => {
+      if (element.id === info.menuItemId) {
+        const replacedText = element.clipboardText
+          .replace("${title}", tab.title)
+          .replace("${url}", tab.url)
+          .replace("${selectionText}", info.selectionText)
+        chrome.tabs.sendMessage(tab.id, {
+          type: "contextMenu",
+          command: "on-click",
+          data: {
+            replacedText: replacedText
+          }
+        })
+      }
     })
   })()
 })
