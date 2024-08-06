@@ -32,7 +32,7 @@ export const ContextMenuCard = ({
           onClick={() => {
             deleteContextMenu(idx);
           }}>
-          x
+          ×
         </div>
       </div>
       <div className="flex_textarea">
