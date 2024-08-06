@@ -65,18 +65,42 @@ export const ContextMenu = () => {
 
   return (
     <div className="frame">
-      {!!contextMenus &&
-        contextMenus.map((contextMenu, idx) => (
-          <div key={idx}>
-            <ContextMenuCard
-              idx={idx}
-              contextMenu={contextMenu}
-              setContextMenuItem={setContextMenuItem}
-              deleteContextMenu={deleteContextMenu}
-            />
-          </div>
-        ))}
-      <button onClick={createEmptyContextMenu}>click</button>
+      <div className="settings">
+        {!!contextMenus &&
+          contextMenus.map((contextMenu, idx) => (
+            <div key={idx}>
+              <ContextMenuCard
+                idx={idx}
+                contextMenu={contextMenu}
+                setContextMenuItem={setContextMenuItem}
+                deleteContextMenu={deleteContextMenu}
+              />
+            </div>
+          ))}
+        <div className="add_button" onClick={createEmptyContextMenu}>
+          ADD NEW CONTEXT MENU
+        </div>
+      </div>
+      <div className="infos">
+        <h3>変数一覧</h3>
+        <div className="info_text">
+          特定の文字列にはページのタイトルなどが挿入されます。
+        </div>
+        <table className="vars">
+          <tr>
+            <td>{'${title}'}:</td>
+            <td>ページのタイトル</td>
+          </tr>
+          <tr>
+            <td>{'${url}'}:</td>
+            <td>ページの URL</td>
+          </tr>
+          <tr>
+            <td>{'${selectionText}'}:</td>
+            <td>選択したテキスト</td>
+          </tr>
+        </table>
+      </div>
     </div>
   );
 };
