@@ -1,7 +1,54 @@
-.row {
-  border: 1px solid black;
+.frame {
+  display: flex;
 }
 
-textarea {
-  vertical-align: top;
+.card {
+  background-color: #f2f2f2;
+  border-radius: 6px;
+  margin: 5px;
+  padding: 10px;
+  width: 200px;
+  height: 150px;
+  overflow: auto;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+
+    .title {
+      display: flex;
+
+      input {
+        border: none;
+        font-size: 1.2em;
+        font-weight: bold;
+        padding-left: 2px;
+        width: 100%;
+        background-color: #f2f2f2;
+        overflow-x: auto;
+
+        &:focus {
+          outline: none;
+          background-color: white;
+        }
+      }
+    }
+
+    .delete_button {
+      background-color: #f2f2f2;
+      border: none;
+      color: red;
+      cursor: pointer;
+      font-size: 1.2em;
+      padding: 0;
+      margin-left: 5px;
+    }
+  }
+
+  textarea {
+    max-width: 97%;
+    width: 97%;
+    height: 100%;
+    margin-top: 5px;
+  }
 }

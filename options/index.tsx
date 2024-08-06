@@ -5,7 +5,7 @@ import "styles/options.scss"
 import { storage } from "~background"
 import type { CustomCopyContextMenu } from "~types"
 
-import { ContextMenuRow } from "./component/contextMenuRow"
+import { ContextMenuCard } from "./component/contextMenuCard"
 
 const OptionsIndex = () => {
   const [contextMenus, setContextMenus] = useState<
@@ -55,7 +55,7 @@ const OptionsIndex = () => {
     const newContextMenus = [...contextMenus]
     newContextMenus.push({
       id: `custom-copy-${Date.now()}`,
-      title: "",
+      title: "title",
       type: "normal",
       contexts: ["selection"],
       clipboardText: ""
@@ -64,11 +64,11 @@ const OptionsIndex = () => {
   }
 
   return (
-    <div>
+    <div className="frame">
       {!!contextMenus &&
         contextMenus.map((contextMenu, idx) => (
           <div key={idx}>
-            <ContextMenuRow
+            <ContextMenuCard
               idx={idx}
               contextMenu={contextMenu}
               setContextMenuItem={setContextMenuItem}
