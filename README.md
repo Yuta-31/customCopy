@@ -12,3 +12,13 @@ https://chromewebstore.google.com/detail/custom-copy/mdkihjamcddnifdkigeigifgoaf
      - テンプレート内に特定の文字列を記載することでページのタイトル等を入れることができます。
 2. コピーしたい文字列を選択して右クリック
 3. Custom Copy > "作成したテンプレートの名前" でクリップボードに指定した形式でコピーされます。
+
+## テンプレートに使用できる変数
+
+| 変数 | 入れることのできる文字列 |
+| --- | --- |
+| ${title} | ページのタイトル |
+| ${url} | ページの URL |
+| ${selectionText} | 選択したテキスト |
+
+
