@@ -23,6 +23,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   ;(async () => {
     const contextMenus: Array<CustomCopyContextMenu> =
       await storage.get("contextMenus")
+    if (!contextMenus || !Array.isArray(contextMenus)) return;
     contextMenus.forEach((element) => {
       if (element.id === info.menuItemId) {
         const replacedText = element.clipboardText
