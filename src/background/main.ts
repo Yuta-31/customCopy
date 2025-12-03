@@ -30,7 +30,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
           .replace("${title}", tab.title ?? "")
           .replace("${url}", tab.url ?? "")
           .replace("${selectionText}", info.selectionText ?? "")
-        chrome.tabs.sendMessage(tab.id!, {
+        // TODO: handle error
+        if (!tab.id) return;
+        chrome.tabs.sendMessage(tab.id, {
           type: "contextMenu",
           command: "on-click",
           data: {
