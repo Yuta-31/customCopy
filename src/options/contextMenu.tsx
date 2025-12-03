@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import 'styles/options_contextMenu.scss';
-import { storage } from '@/background';
+import '@/styles/options_contextMenu.scss';
+import { storage } from '@/lib/storage';
 import { ContextMenuCard } from './component/contextMenuCard';
 import type { CustomCopyContextMenu } from '@/types';
 

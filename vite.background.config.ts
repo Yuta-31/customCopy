@@ -7,9 +7,10 @@ export default defineConfig({
     rollupOptions: {
       input: {
         background: resolve(__dirname, "src/background/main.ts"),
+        content: resolve(__dirname, "src/content/main.ts"),
       },
       output: {
-        entryFileNames: "background.js",
+        entryFileNames: "[name].js",
       },
     },
     outDir: "dist",
