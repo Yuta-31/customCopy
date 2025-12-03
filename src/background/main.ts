@@ -1,4 +1,5 @@
 import { storage } from "@/lib/storage"
+import { stripQuery } from "@/lib/url"
 import { handleContextMenu } from "./messages/contextMenu"
 import type { CustomCopyContextMenu, Message } from "@/types"
 
@@ -26,9 +27,15 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (!contextMenus || !Array.isArray(contextMenus)) return;
     contextMenus.forEach((element) => {
       if (element.id === info.menuItemId) {
+        // replace text
+        const url = (() => {
+          if (element.deleteQuery) return stripQuery(tab.url ?? "")
+          return tab.url ?? ""
+        })()
+        console.log(element.deleteQuery, url)
         const replacedText = element.clipboardText
           .replace("${title}", tab.title ?? "")
-          .replace("${url}", tab.url ?? "")
+          .replace("${url}", url)
           .replace("${selectionText}", info.selectionText ?? "")
         // TODO: handle error
         if (!tab.id) return;

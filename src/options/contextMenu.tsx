@@ -34,7 +34,7 @@ export const ContextMenu = () => {
   const setContextMenuItem = (
     idx: number,
     key: keyof CustomCopyContextMenu,
-    value: string | string[]
+    value: string | string[] | boolean
   ) => {
     // TODO: do validation
     const newContextMenus = [...contextMenus];

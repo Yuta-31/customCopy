@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Switch } from '@/components/ui/switch';
 import type { CustomCopyContextMenu } from '@/types';
 
 export const ContextMenuCard = ({
@@ -15,7 +16,7 @@ export const ContextMenuCard = ({
   setContextMenuItem: (
     idx: number,
     key: keyof CustomCopyContextMenu,
-    value: string | string[]
+    value: string | string[] | boolean
   ) => void;
   deleteContextMenu: (idx: number) => void;
 }) => {
@@ -71,9 +72,12 @@ export const ContextMenuCard = ({
             <AccordionTrigger className="text-xs text-stone-600">
               Options
             </AccordionTrigger>
-            <AccordionContent>
-              <div className="rounded-md bg-stone-100 border border-stone-200 px-3 py-2 font-mono text-xs text-stone-800 whitespace-pre-wrap">
-                test
+            <AccordionContent className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <div>delete query</div>
+                <Switch checked={contextMenu.deleteQuery} onCheckedChange={(checked) => {
+                  setContextMenuItem(idx, 'deleteQuery', checked);
+                }} />
               </div>
             </AccordionContent>
           </AccordionItem>

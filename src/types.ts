@@ -7,4 +7,5 @@ export type Message = {
 
 export type CustomCopyContextMenu = chrome.contextMenus.CreateProperties & {
   clipboardText: string
+  deleteQuery?: boolean | undefined
 }
