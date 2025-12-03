@@ -1,4 +1,4 @@
-// src/lib/storage.ts (場所はお好み)
+
 class Storage {
   async get<T = unknown>(key: string): Promise<T> {
     return new Promise((resolve, reject) => {
@@ -48,10 +48,6 @@ class Storage {
     })
   }
 
-  /**
-   * Plasmo の storage.watch(キー, コールバック)っぽい簡易版
-   * 戻り値は unsubscribe 関数にしておく
-   */
   watch<T = unknown>(key: string, cb: (value: T | null) => void): () => void {
     const listener = (
       changes: { [key: string]: chrome.storage.StorageChange },
@@ -64,7 +60,6 @@ class Storage {
 
     chrome.storage.onChanged.addListener(listener)
 
-    // 解除用
     return () => {
       chrome.storage.onChanged.removeListener(listener)
     }
