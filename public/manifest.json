@@ -1,0 +1,41 @@
+{
+  "icons": {
+    "16": "./gen-assets/icon16.png",
+    "48": "./gen-assets/icon48.png",
+    "128": "./gen-assets/icon128.png"
+  },
+  "manifest_version": 3,
+  "action": {
+    "default_icon": {
+      "16": "./gen-assets/icon16.png",
+      "48": "./gen-assets/icon48.png"
+    }
+  },
+  "version": "1.0.0",
+  "name": "Custom Copy",
+  "description": "コピーするときに任意の形式に整形できます。",
+  "author": "yuta.ide.gt@outlook.jp",
+  "permissions": [
+    "storage",
+    "clipboardWrite",
+    "contextMenus"
+  ],
+  "background": {
+    "service_worker": "..\\background\\index.ts",
+    "type": "module"
+  },
+  "options_ui": {
+    "page": "./static/options/index.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "..\\contents\\copy.ts"
+      ]
+    }
+  ]
+}

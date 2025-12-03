@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-
 import 'styles/options_contextMenu.scss';
-
-import { storage } from '~background';
-import type { CustomCopyContextMenu } from '~types';
-
+import { storage } from '@/background';
 import { ContextMenuCard } from './component/contextMenuCard';
+import type { CustomCopyContextMenu } from '@/types';
+
 
 export const ContextMenu = () => {
   const [contextMenus, setContextMenus] = useState<
@@ -33,7 +31,7 @@ export const ContextMenu = () => {
 
   const setContextMenuItem = (
     idx: number,
-    key: 'title' | 'type' | 'contexts',
+    key: keyof CustomCopyContextMenu,
     value: string | string[]
   ) => {
     // TODO: do validation

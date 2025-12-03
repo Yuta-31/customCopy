@@ -1,4 +1,4 @@
-import type { Message } from "~types"
+import type { Message } from "@/types"
 
 window.addEventListener("load", () => {
   chrome.runtime.onMessage.addListener(

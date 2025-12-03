@@ -1,6 +1,6 @@
 import { Storage } from "@plasmohq/storage"
 
-import type { CustomCopyContextMenu, Message } from "~types"
+import type { CustomCopyContextMenu, Message } from "@/types"
 
 import { handleContextMenu } from "./messages/contextMenu"
 

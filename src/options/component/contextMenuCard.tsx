@@ -1,4 +1,4 @@
-import type { CustomCopyContextMenu } from '~types';
+import type { CustomCopyContextMenu } from '@/types';
 
 export const ContextMenuCard = ({
   idx,

@@ -1,5 +1,5 @@
-import { storage } from "~background"
-import type { Message } from "~types"
+import { storage } from "@/background"
+import type { Message } from "@/types"
 
 export const handleContextMenu = (message: Message) => {
   if (message.type !== "contextMenu") return
