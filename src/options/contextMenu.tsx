@@ -3,7 +3,7 @@ import '@/styles/options_contextMenu.scss';
 import { storage } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { ContextMenuCard } from './component/contextMenuCard';
-import { ContextMenuEmptyView} from './component/CotenxtMenuEmptyView';
+import { ContextMenuEmptyView} from './component/ContextMenuEmptyView';
 import type { CustomCopyContextMenu } from '@/types';
 
 
