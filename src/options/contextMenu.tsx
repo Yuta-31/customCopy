@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import '@/styles/options_contextMenu.scss';
 import { storage } from '@/lib/storage';
+import { Button } from '@/components/ui/button';
 import { ContextMenuCard } from './component/contextMenuCard';
+import { ContextMenuEmptyView} from './component/CotenxtMenuEmptyView';
 import type { CustomCopyContextMenu } from '@/types';
 
 
@@ -63,8 +65,8 @@ export const ContextMenu = () => {
 
   return (
     <div className="frame">
-      <div className="settings">
-        {!!contextMenus &&
+      <div className="w-[600px] flex flex-col gap-2">
+        {contextMenus.length > 0 ?
           contextMenus.map((contextMenu, idx) => (
             <div key={idx}>
               <ContextMenuCard
@@ -74,10 +76,15 @@ export const ContextMenu = () => {
                 deleteContextMenu={deleteContextMenu}
               />
             </div>
-          ))}
-        <div className="add_button" onClick={createEmptyContextMenu}>
+          )) : <ContextMenuEmptyView 
+            onNewSnippetClick={createEmptyContextMenu}
+            onImportSnippetClick={()=>{console.log("import")}}
+          />}
+        {contextMenus.length > 0 && 
+        (<Button onClick={createEmptyContextMenu}>
           ADD NEW CONTEXT MENU
-        </div>
+        </Button>)}
+        
       </div>
       <div className="infos">
         <h3>変数一覧</h3>
