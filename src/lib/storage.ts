@@ -1,4 +1,3 @@
-
 class Storage {
   async get<T = unknown>(key: string): Promise<T> {
     return new Promise((resolve, reject) => {
