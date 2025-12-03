@@ -1,5 +1,5 @@
-import { storage } from "~background"
-import type { Message } from "~types"
+import { storage } from "@/lib/storage"
+import type { Message } from "@/types"
 
 export const handleContextMenu = (message: Message) => {
   if (message.type !== "contextMenu") return
@@ -11,12 +11,14 @@ export const handleContextMenu = (message: Message) => {
         chrome.contextMenus.removeAll(() => {
           if (Array.isArray(contextMenus)) {
             contextMenus.forEach((element) => {
+              // TODO: handle log and result
               const res = chrome.contextMenus.create({
                 id: element.id,
                 title: element.title,
                 type: element.type,
                 contexts: element.contexts
               })
+              console.log("result", res)
             })
           }
         })

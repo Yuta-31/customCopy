@@ -1,0 +1,29 @@
+{
+  "icons": {
+    "128": "./icon128.png"
+  },
+  "manifest_version": 3,
+  "version": "1.0.0",
+  "name": "Custom Copy",
+  "description": "コピーするときに任意の形式に整形できます。",
+  "author": "yuta.ide.gt@outlook.jp",
+  "permissions": [
+    "storage",
+    "clipboardWrite",
+    "contextMenus"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "options_ui": {
+    "page": "./options/index.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

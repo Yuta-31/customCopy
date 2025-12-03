@@ -1,8 +1,8 @@
-import type { Message } from "~types"
+import type { Message } from "@/types"
 
 window.addEventListener("load", () => {
   chrome.runtime.onMessage.addListener(
-    (message: Message, sender, sendResponse) => {
+    (message: Message) => {
       console.log(message)
       if (message.type !== "contextMenu") return
       if (message.command !== "on-click") return

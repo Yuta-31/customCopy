@@ -1,4 +1,4 @@
-import type { Message } from "~types"
+import type { Message } from "@/types"
 
 const handleRelay = (message: Message) => {
   if (message.type !== "relay") return
@@ -12,7 +12,10 @@ const handleRelay = (message: Message) => {
       command: message.command,
       data: message.data
     }
-    const result = await chrome.tabs.sendMessage(tab.id, msg)
+    // TODO: tab.id might be undefined
+    // TODO: handle log and result
+    const result = await chrome.tabs.sendMessage(tab.id!, msg)
+    console.log("result", result)
   })()
 }
 

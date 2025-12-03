@@ -1,6 +1,7 @@
+import ReactDOM from "react-dom/client";
 import { ContextMenu } from './contextMenu';
 
-const OptionIndex = () => {
+const App = () => {
   return (
     <div>
       <h1>Options</h1>
@@ -14,4 +15,4 @@ const OptionIndex = () => {
   );
 };
 
-export default OptionIndex;
+ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
