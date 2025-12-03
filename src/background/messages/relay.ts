@@ -13,7 +13,9 @@ const handleRelay = (message: Message) => {
       data: message.data
     }
     // TODO: tab.id might be undefined
+    // TODO: handle log and result
     const result = await chrome.tabs.sendMessage(tab.id!, msg)
+    console.log("result", result)
   })()
 }
 
