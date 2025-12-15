@@ -1,7 +1,7 @@
 import { storage } from "@/lib/storage"
 import { stripQuery } from "@/lib/url"
 import { handleContextMenu } from "./messages/contextMenu"
-import type { CustomCopyContextMenu, Message } from "@/types"
+import type { CustomCopySnippet, Message } from "@/types"
 
 // add message listener
 chrome.runtime.onMessage.addListener(
@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (!tab) return;
   ;(async () => {
-    const contextMenus: Array<CustomCopyContextMenu> =
+    const contextMenus: Array<CustomCopySnippet> =
       await storage.get("contextMenus")
     if (!contextMenus || !Array.isArray(contextMenus)) return;
     contextMenus.forEach((element) => {

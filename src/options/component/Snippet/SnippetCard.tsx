@@ -3,23 +3,17 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Switch } from '@/components/ui/switch';
-import type { CustomCopyContextMenu } from '@/types';
+import { useSnippetList } from '@/options/hooks/useSnippetList';
+import type { CustomCopySnippet } from '@/types';
 
-export const ContextMenuCard = ({
+export const SnippetCard = ({
   idx,
-  contextMenu,
-  setContextMenuItem,
-  deleteContextMenu
+  snippet
 }: {
   idx: number;
-  contextMenu: CustomCopyContextMenu;
-  setContextMenuItem: (
-    idx: number,
-    key: keyof CustomCopyContextMenu,
-    value: string | string[] | boolean
-  ) => void;
-  deleteContextMenu: (idx: number) => void;
+  snippet: CustomCopySnippet;
 }) => {
+  const { setSnippet, deleteSnippet } = useSnippetList();
   return (
     <Card 
       key={idx}
@@ -30,9 +24,9 @@ export const ContextMenuCard = ({
           <input
             className="w-full"
             placeholder="title"
-            value={contextMenu.title}
+            value={snippet.title}
             onChange={(e) => {
-              setContextMenuItem(idx, 'title', e.target.value);
+              setSnippet(idx, 'title', e.target.value);
             }}
           />
         </CardTitle>
@@ -40,7 +34,7 @@ export const ContextMenuCard = ({
           <div
             className="delete_button"
             onClick={() => {
-              deleteContextMenu(idx);
+              deleteSnippet(idx);
             }}>
             <X />
           </div>
@@ -49,22 +43,24 @@ export const ContextMenuCard = ({
       <CardContent>
         <Textarea
           placeholder="snippet"
-          value={contextMenu.clipboardText}
+          value={snippet.clipboardText}
           onChange={(e) => {
-            setContextMenuItem(idx, 'clipboardText', e.target.value);
+            setSnippet(idx, 'clipboardText', e.target.value);
           }}
         />
       
         <section
           id="preview"
           className="mt-3"
-          style={{ color: contextMenu.clipboardText === '' ? 'grey' : '' }}>
+          style={{ color: snippet.clipboardText === '' ? 'grey' : '' }}>
           <div className="text-stone-500 text-xs w-full border-b pb-1 mb-2">Preview</div>
-          {contextMenu.clipboardText
+          <div className="whitespace-pre-wrap text-stone-600">
+            {snippet.clipboardText
             .replace('${title}', 'ココにページのタイトルが入ります。')
             .replace('${url}', 'ココにページの URL が入ります。')
             .replace('${selectionText}', 'ココに選択したテキストが入ります。') ||
             'プレビューが表示されます。'}
+          </div>
         </section>
 
         <Accordion type="single" collapsible className="pt-1">
@@ -75,8 +71,8 @@ export const ContextMenuCard = ({
             <AccordionContent className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <div>delete query</div>
-                <Switch checked={contextMenu.deleteQuery} onCheckedChange={(checked) => {
-                  setContextMenuItem(idx, 'deleteQuery', checked);
+                <Switch checked={snippet.deleteQuery} onCheckedChange={(checked) => {
+                  setSnippet(idx, 'deleteQuery', checked);
                 }} />
               </div>
             </AccordionContent>

@@ -1,11 +1,12 @@
 import ReactDOM from "react-dom/client";
-import { ContextMenu } from './contextMenu';
+import { SnippetList } from './component/Snippet/SnippetList';
+import { SnippetListProvider } from './component/Snippet/SnippetListContext';
 
 const App = () => {
   return (
-    <div>
-      <ContextMenu />
-    </div>
+    <SnippetListProvider>
+      <SnippetList />
+    </SnippetListProvider>
   );
 };
 

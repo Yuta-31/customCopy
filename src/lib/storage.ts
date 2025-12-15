@@ -1,8 +1,10 @@
+import type { StorageKey } from "@/types"
+
 class Storage {
-  async get<T = unknown>(key: string): Promise<T> {
+  async get<T = unknown>(key: StorageKey): Promise<T> {
     return new Promise((resolve, reject) => {
       try {
-        chrome.storage.local.get([key], (result) => {
+        chrome.storage.sync.get([key], (result) => {
           if (chrome.runtime.lastError) {
             reject(chrome.runtime.lastError)
             return
@@ -15,10 +17,10 @@ class Storage {
     })
   }
 
-  async set<T = unknown>(key: string, value: T): Promise<void> {
+  async set<T = unknown>(key: StorageKey, value: T): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        chrome.storage.local.set({ [key]: value }, () => {
+        chrome.storage.sync.set({ [key]: value }, () => {
           if (chrome.runtime.lastError) {
             reject(chrome.runtime.lastError)
             return
@@ -34,7 +36,7 @@ class Storage {
   async remove(key: string | string[]): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        chrome.storage.local.remove(key, () => {
+        chrome.storage.sync.remove(key, () => {
           if (chrome.runtime.lastError) {
             reject(chrome.runtime.lastError)
             return
@@ -47,7 +49,7 @@ class Storage {
     })
   }
 
-  watch<T = unknown>(key: string, cb: (value: T | null) => void): () => void {
+  watch<T = unknown>(key: StorageKey, cb: (value: T | null) => void): () => void {
     const listener = (
       changes: { [key: string]: chrome.storage.StorageChange },
       areaName: chrome.storage.AreaName

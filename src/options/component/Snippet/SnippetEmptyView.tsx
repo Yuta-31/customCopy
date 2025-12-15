@@ -8,16 +8,14 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { useSnippetList } from '@/options/hooks/useSnippetList';
 
-interface ContextMenuEmptyViewProps {
-  onNewSnippetClick: () => void
-  onImportSnippetClick: () => void
-}
+export const SnippetEmptyView = () => {
+  const { createEmptySnippet } = useSnippetList();
 
-export const ContextMenuEmptyView = ({
-  onNewSnippetClick,
-  onImportSnippetClick
-}: ContextMenuEmptyViewProps) => {
+  const onImportSnippetClick = () => {
+    console.log("import");
+  };
   return (
     <Empty>
       <EmptyHeader>
@@ -32,7 +30,7 @@ export const ContextMenuEmptyView = ({
       </EmptyHeader>
       <EmptyContent>
         <div className="flex gap-2">
-          <Button onClick={onNewSnippetClick}>Create Snippet</Button>
+          <Button onClick={createEmptySnippet}>Create Snippet</Button>
           <Button variant="outline" onClick={onImportSnippetClick}>Import Snippet</Button>
         </div>
       </EmptyContent>
