@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { transformUrl } from './url'
+import { transformUrl, extractSectionHeading } from './url'
 
 describe('transformUrl', () => {
   describe('basic transformations', () => {
@@ -82,7 +82,7 @@ describe('transformUrl', () => {
     it('should return original URL if replacement is null', () => {
       const url = 'https://example.com'
       const pattern = '^https://'
-      const replacement = null as any
+      const replacement = null
       const result = transformUrl(url, pattern, replacement)
       expect(result).toBe('https://example.com')
     })
@@ -90,7 +90,7 @@ describe('transformUrl', () => {
     it('should return original URL if replacement is undefined', () => {
       const url = 'https://example.com'
       const pattern = '^https://'
-      const replacement = undefined as any
+      const replacement = undefined
       const result = transformUrl(url, pattern, replacement)
       expect(result).toBe('https://example.com')
     })
@@ -138,3 +138,84 @@ describe('transformUrl', () => {
     })
   })
 })
+
+describe('extractSectionHeading', () => {
+  describe('basic extraction', () => {
+    it('should extract simple section heading from hash', () => {
+      const url = 'https://example.com#section-heading'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('section-heading')
+    })
+
+    it('should extract section with underscores', () => {
+      const url = 'https://example.com/page#my_section_id'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('my_section_id')
+    })
+
+    it('should extract section with numbers', () => {
+      const url = 'https://example.com#section-123'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('section-123')
+    })
+  })
+
+  describe('URL encoding', () => {
+    it('should decode URL-encoded section heading', () => {
+      const url = 'https://example.com#%E3%82%BB%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('セクション')
+    })
+
+    it('should decode section with spaces encoded as %20', () => {
+      const url = 'https://example.com#my%20section%20heading'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('my section heading')
+    })
+
+    it('should decode mixed ASCII and encoded characters', () => {
+      const url = 'https://example.com#Section_%E8%A6%8B%E5%87%BA%E3%81%97'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('Section_見出し')
+    })
+  })
+
+  describe('edge cases', () => {
+    it('should return empty string for URL without hash', () => {
+      const url = 'https://example.com/path'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('')
+    })
+
+    it('should return empty string for URL with empty hash', () => {
+      const url = 'https://example.com#'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('')
+    })
+
+    it('should handle URL with query parameters and hash', () => {
+      const url = 'https://example.com?foo=bar#section'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('section')
+    })
+
+    it('should handle complex URL with path, query, and hash', () => {
+      const url = 'https://example.com/path/to/page?param=value#my-section'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('my-section')
+    })
+
+    it('should return empty string for invalid URL', () => {
+      const url = 'not-a-valid-url'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('')
+    })
+
+    it('should handle hash with special characters', () => {
+      const url = 'https://example.com#section:subsection'
+      const result = extractSectionHeading(url)
+      expect(result).toBe('section:subsection')
+    })
+  })
+})
+

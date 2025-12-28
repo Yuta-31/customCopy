@@ -1,5 +1,5 @@
 import { storage } from "@/lib/storage"
-import { stripQuery, transformUrl } from "@/lib/url"
+import { stripQuery, transformUrl, extractSectionHeading } from "@/lib/url"
 import { backgroundLogger } from "@/background/lib/logger"
 import { handleContextMenu } from "./messages/contextMenu"
 import { logging } from "./messages/logger"
@@ -88,15 +88,39 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       enabledRuleIds: matchedElement.enabledRuleIds,
       url 
     })
-    const replacedText = matchedElement.clipboardText
-      .replace("${title}", tab.title ?? "")
-      .replace("${url}", url)
-      .replace("${selectionText}", info.selectionText ?? "")
     
     if (!tab.id) {
       backgroundLogger.error('Tab ID is missing, cannot send message');
       return;
     }
+    
+    // Extract section ID from URL and get heading text from page
+    const sectionId = extractSectionHeading(url);
+    let section = sectionId;
+    
+    if (sectionId) {
+      try {
+        // Request section heading text from content script
+        const response = await chrome.tabs.sendMessage(tab.id, {
+          type: "getSectionHeading",
+          command: "request",
+          data: { sectionId }
+        }) as { headingText?: string } | undefined;
+        
+        if (response?.headingText) {
+          section = response.headingText;
+          backgroundLogger.debug("Section heading retrieved", { sectionId, headingText: section });
+        }
+      } catch (error) {
+        backgroundLogger.warn('Failed to get section heading from content script, using section ID', { sectionId, error });
+      }
+    }
+    
+    const replacedText = matchedElement.clipboardText
+      .replace("${title}", tab.title ?? "")
+      .replace("${url}", url)
+      .replace("${selectionText}", info.selectionText ?? "")
+      .replace("${section}", section)
     
     chrome.tabs.sendMessage(tab.id, {
       type: "contextMenu",

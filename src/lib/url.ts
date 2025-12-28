@@ -40,3 +40,42 @@ export const transformUrl = (rawUrl: string, pattern: string, replacement: strin
     return rawUrl
   }
 }
+
+/**
+ * Extract section heading from URL hash fragment
+ * @param url - The URL to extract section heading from
+ * @returns Decoded section heading text or empty string if no hash exists
+ * 
+ * Examples:
+ * - "https://example.com#section-heading" -> "section-heading"
+ * - "https://example.com#%E3%82%BB%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3" -> "セクション"
+ * - "https://example.com" -> ""
+ */
+export const extractSectionHeading = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    const hash = urlObj.hash;
+    
+    if (!hash || hash === '#') {
+      return '';
+    }
+    
+    // Remove the leading '#' and decode the URI component
+    const sectionId = hash.substring(1);
+    return decodeURIComponent(sectionId);
+  } catch (error) {
+    urlLogger.error('Failed to extract section heading:', error);
+    return '';
+  }
+};
+
+export const stripQuery = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    urlObj.search = '';
+    return urlObj.toString();
+  } catch (error) {
+    urlLogger.error('Failed to strip query:', error);
+    return url;
+  }
+};

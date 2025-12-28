@@ -15,6 +15,7 @@ const renderPreviewWithHighlight = (text: string) => {
     { pattern: '${title}', replacement: 'Page title will be inserted here.' },
     { pattern: '${url}', replacement: 'Page URL will be inserted here.' },
     { pattern: '${selectionText}', replacement: 'Selected text will be inserted here.' },
+    { pattern: '${section}', replacement: 'Section heading will be inserted here.' },
   ];
 
   const highlightColor = 'bg-amber-100 text-amber-900';
