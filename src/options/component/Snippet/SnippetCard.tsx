@@ -148,6 +148,28 @@ export const SnippetCard = ({
                 }} />
               </div>
               
+              <div className="flex items-center justify-between pt-2 border-t">
+                <div className="flex flex-col">
+                  <div className="text-sm">Keyboard Shortcut</div>
+                  <div className="text-xs text-stone-500">Assign Ctrl+Shift+[1-5]</div>
+                </div>
+                <select
+                  value={snippet.shortcutNumber || ''}
+                  onChange={(e) => {
+                    const value = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
+                    setSnippet(idx, 'shortcutNumber', value);
+                  }}
+                  className="px-3 py-1.5 border rounded-md text-sm bg-white"
+                >
+                  <option value="">None</option>
+                  <option value="1">Ctrl+Shift+1</option>
+                  <option value="2">Ctrl+Shift+2</option>
+                  <option value="3">Ctrl+Shift+3</option>
+                  <option value="4">Ctrl+Shift+4</option>
+                  <option value="5">Ctrl+Shift+5</option>
+                </select>
+              </div>
+              
               {rules.length > 0 && (
                 <div className="flex flex-col gap-2 pt-2 border-t">
                   <div className="text-xs text-stone-500 font-medium">URL Transform Rules</div>

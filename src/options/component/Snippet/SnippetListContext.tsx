@@ -13,7 +13,7 @@ interface SnippetListContextType {
   setSnippet: (
     idx: number,
     key: keyof CustomCopySnippetContextMenu,
-    value: string | string[] | boolean
+    value: string | string[] | boolean | number | undefined
   ) => void;
   deleteSnippet: (idx: number) => void;
   createEmptySnippet: () => void;
@@ -80,7 +80,7 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
   const setSnippet = (
     idx: number,
     key: keyof CustomCopySnippetContextMenu,
-    value: string | string[] | boolean
+    value: string | string[] | boolean | number | undefined
   ) => {
     const newSnippets = [...snippets];
     newSnippets[idx] = {

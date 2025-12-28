@@ -1,13 +1,15 @@
 import { resolve } from "path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => ({
+  plugins: [react()],
   build: {
     rollupOptions: {
       input: {
         background: resolve(__dirname, "src/background/main.ts"),
-        content: resolve(__dirname, "src/content/main.ts"),
+        content: resolve(__dirname, "src/content/main.tsx"),
       },
       output: {
         entryFileNames: "[name].js",

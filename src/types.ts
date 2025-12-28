@@ -1,11 +1,13 @@
 // Message types for chrome.runtime communication
-export type MessageType = "relay" | "contextMenu" | "logger" | "getSectionHeading"
+export type MessageType = "relay" | "contextMenu" | "logger" | "getSectionHeading" | "getSelection" | "getPageInfo"
 
 export type MessageData = 
   | { type: "relay"; command: string; data?: unknown }
-  | { type: "contextMenu"; command: "on-load" | "on-click"; data?: { replacedText?: string } }
+  | { type: "contextMenu"; command: "on-load" | "on-click"; data?: { replacedText?: string; snippetTitle?: string } }
   | { type: "logger"; command: "info" | "warn" | "error"; data: { message: string; args: unknown[] } }
   | { type: "getSectionHeading"; command: "request"; data?: { sectionId: string } }
+  | { type: "getSelection"; command: "request"; data?: never }
+  | { type: "getPageInfo"; command: "request"; data?: never }
 
 export type Message = MessageData
 
@@ -29,6 +31,7 @@ export type CustomCopySnippet = {
   deleteQuery?: boolean | undefined
   enabledRuleIds?: string[] | undefined
   contexts?: [`${chrome.contextMenus.ContextType}`, ...`${chrome.contextMenus.ContextType}`[]];
+  shortcutNumber?: number | undefined // 1-5 for Ctrl+Shift+1 through Ctrl+Shift+5
 }
 
 export type CustomCopySnippetContextMenu = chrome.contextMenus.CreateProperties & CustomCopySnippet
@@ -53,6 +56,7 @@ export const toCustomCopySnippet = (snippet: CustomCopySnippetContextMenu): Cust
     deleteQuery: snippet.deleteQuery,
     enabledRuleIds: snippet.enabledRuleIds,
     contexts: snippet.contexts,
+    shortcutNumber: snippet.shortcutNumber,
   };
 };
 
@@ -70,6 +74,7 @@ export const isSnippetEqual = (a: CustomCopySnippet | Omit<CustomCopySnippet, 'i
   if (a.title !== b.title) return false;
   if (a.clipboardText !== b.clipboardText) return false;
   if (a.deleteQuery !== b.deleteQuery) return false;
+  if (a.shortcutNumber !== b.shortcutNumber) return false;
   
   // Check enabledRuleIds array equality
   if (!a.enabledRuleIds && !b.enabledRuleIds) {
