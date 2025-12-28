@@ -1,17 +1,21 @@
+import { contentLogger } from "./lib/logger"
 import type { Message } from "@/types"
 
 window.addEventListener("load", () => {
+  contentLogger.info("Window loaded")
   chrome.runtime.onMessage.addListener(
     (message: Message) => {
-      console.log(message)
+      contentLogger.info("Received message", message)
       if (message.type !== "contextMenu") return
       if (message.command !== "on-click") return
       const result = message.data.replacedText
       navigator.clipboard.writeText(result)
+      contentLogger.info("Text copied to clipboard", { text: result })
     }
   )
   chrome.runtime.sendMessage({
     type: "contextMenu",
     command: "on-load"
   })
+  contentLogger.info("Content script loaded")
 })

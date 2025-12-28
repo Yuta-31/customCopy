@@ -1,18 +1,23 @@
 import { createContext, useState, useEffect, type ReactNode } from 'react';
 import { storage } from '@/lib/storage';
-import type { CustomCopySnippet } from '@/types';
+import { pickJsonFile } from '@/lib/file';
+import { toCustomCopySnippet, isSnippetEqual } from '@/types';
+import { snippetLogger } from '@/options/lib/logger';
+import type { CustomCopySnippetContextMenu, CustomCopySnippet } from '@/types';
 
 interface SnippetListContextType {
-  snippets: Array<CustomCopySnippet>;
-  setSnippets: (snippets: Array<CustomCopySnippet>) => void;
+  snippets: Array<CustomCopySnippetContextMenu>;
+  setSnippets: (snippets: Array<CustomCopySnippetContextMenu>) => void;
   setSnippet: (
     idx: number,
-    key: keyof CustomCopySnippet,
+    key: keyof CustomCopySnippetContextMenu,
     value: string | string[] | boolean
   ) => void;
   deleteSnippet: (idx: number) => void;
   createEmptySnippet: () => void;
   refreshSnippets: () => Promise<void>;
+  importSnippets: () => Promise<void>;
+  exportSnippets: () => CustomCopySnippet[];
 }
 
 export const SnippetListContext = createContext<SnippetListContextType | undefined>(undefined);
@@ -22,12 +27,15 @@ interface SnippetListProviderProps {
 }
 
 export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
-  const [snippets, setSnippets] = useState<Array<CustomCopySnippet>>([]);
+  const [snippets, setSnippets] = useState<Array<CustomCopySnippetContextMenu>>([]);
 
   const loadSnippets = async () => {
-    const fetchedSnippets = await storage.get('contextMenus');
+    const fetchedSnippets: Array<CustomCopySnippetContextMenu> | undefined = await storage.get('contextMenus');
     if (fetchedSnippets) {
-      setSnippets(fetchedSnippets as unknown as Array<CustomCopySnippet>);
+      snippetLogger.info('Snippets loaded from storage', { count: fetchedSnippets.length });
+      setSnippets(fetchedSnippets as unknown as Array<CustomCopySnippetContextMenu>);
+    } else {
+      snippetLogger.debug('No snippets found in storage');
     }
   };
 
@@ -36,16 +44,16 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('Snippets updated, saving to storage...');
     (async () => {
+      snippetLogger.debug('Saving snippets to storage', { count: snippets.length });
       await storage.set('contextMenus', snippets);
+      snippetLogger.info('Snippets saved successfully');
     })();
-    console.log(snippets);
   }, [snippets]);
 
   const setSnippet = (
     idx: number,
-    key: keyof CustomCopySnippet,
+    key: keyof CustomCopySnippetContextMenu,
     value: string | string[] | boolean
   ) => {
     const newSnippets = [...snippets];
@@ -58,24 +66,83 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
 
   const deleteSnippet = (idx: number) => {
     const newSnippets = [...snippets];
+    const deletedSnippet = newSnippets[idx];
     newSnippets.splice(idx, 1);
+    snippetLogger.info('Snippet deleted', { id: deletedSnippet?.id, index: idx });
     setSnippets(newSnippets);
   };
 
   const createEmptySnippet = () => {
     const newSnippets = [...snippets];
-    newSnippets.push({
+    const newSnippet: CustomCopySnippetContextMenu = {
       id: `custom-copy-${Date.now()}`,
       title: 'title',
       type: 'normal',
       contexts: ['selection'],
       clipboardText: ''
-    });
+    };
+    newSnippets.push(newSnippet);
+    snippetLogger.info('New snippet created', { id: newSnippet.id });
     setSnippets(newSnippets);
   };
 
   const refreshSnippets = async () => {
     await loadSnippets();
+  };
+
+  const exportSnippets = (): CustomCopySnippet[] => {
+    return snippets.map(toCustomCopySnippet);
+  };
+
+  const importSnippets = async () => {
+    const file = await pickJsonFile();
+    if (!file) {
+      snippetLogger.debug('Upload cancelled');
+      return;
+    }
+
+    try {
+      snippetLogger.info('Uploading snippets from file', { fileName: file.name });
+      const text = await file.text();
+      const parsed: CustomCopySnippet[] = JSON.parse(text);
+
+      // TODO: do validation
+      const existingSnippets = snippets.map(toCustomCopySnippet);
+      const newSnippets: CustomCopySnippetContextMenu[] = parsed
+        .filter((importedSnippet) => {
+          const isDuplicate = existingSnippets.some((existing) => 
+            isSnippetEqual(existing, importedSnippet)
+          );
+          return !isDuplicate;
+        })
+        .map((snippet) => ({
+          id: `custom-copy-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+          title: 'imported snippet',
+          type: 'normal' as const,
+          ...snippet,
+        }));
+
+      const duplicateCount = parsed.length - newSnippets.length;
+      
+      if (duplicateCount > 0) {
+        snippetLogger.info('Duplicates skipped', { count: duplicateCount });
+      }
+      
+      setSnippets([...snippets, ...newSnippets]);
+      snippetLogger.info('Snippets imported successfully', { 
+        imported: newSnippets.length, 
+        skipped: duplicateCount,
+        total: snippets.length + newSnippets.length 
+      });
+
+      if (duplicateCount > 0) {
+        alert(`${newSnippets.length} 件のスニペットをインポートしました。${duplicateCount} 件の重複はスキップされました。`);
+      }
+
+    } catch (e) {
+      snippetLogger.error('Upload failed', e);
+      alert("JSON の読み込みに失敗しました。ファイル内容を確認してください。");
+    }
   };
 
   const value: SnippetListContextType = {
@@ -84,7 +151,9 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
     setSnippet,
     deleteSnippet,
     createEmptySnippet,
-    refreshSnippets
+    refreshSnippets,
+    importSnippets,
+    exportSnippets,
   };
 
   return (

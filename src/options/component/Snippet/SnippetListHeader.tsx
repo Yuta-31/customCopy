@@ -1,32 +1,18 @@
+// src/options/component/Snippet/SnippetListHeader.tsx
 import { Download, Upload, Plus } from "lucide-react";
-import { downloadJson, pickJsonFile } from "@/lib/file";
+import { downloadJson } from "@/lib/file";
+import { snippetLogger } from "@/options/lib/logger";
 import { useSnippetList } from '@/options/hooks/useSnippetList';
 import HoverExpandButton from "../HoverExpandButton";
 
 
 const SnippetListHeader = () => {
-  const { snippets, setSnippets, createEmptySnippet } = useSnippetList();
+  const { snippets, createEmptySnippet, importSnippets, exportSnippets } = useSnippetList();
 
   const handleDownload = async () => {
-    downloadJson(snippets, "SnippetList.json");
-  };
-
-  const handleUpload = async () => {
-    const file = await pickJsonFile();
-    console.log(file);
-    if (!file) return;
-
-    try {
-      const text = await file.text();
-      const parsed = JSON.parse(text);
-
-      // TODO: do validation
-      setSnippets(parsed);
-
-    } catch (e) {
-      console.error("Upload failed:", e);
-      alert("JSON の読み込みに失敗しました。ファイル内容を確認してください。");
-    }
+    snippetLogger.info('Downloading snippets', { count: snippets.length });
+    const exportData = exportSnippets();
+    downloadJson(exportData, "SnippetList.json");
   };
 
   return (
@@ -35,7 +21,7 @@ const SnippetListHeader = () => {
       <div className="flex gap-2">
           <HoverExpandButton icon={<Plus />} text="Add New" variant="default" onClick={createEmptySnippet} />
           <HoverExpandButton icon={<Download />} text="Download" onClick={handleDownload} disabled={snippets.length === 0} />
-          <HoverExpandButton icon={<Upload />} text="Upload" onClick={handleUpload} />
+          <HoverExpandButton icon={<Upload />} text="Upload" onClick={importSnippets} />
         </div>
     </div>
   )

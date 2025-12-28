@@ -4,14 +4,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Switch } from '@/components/ui/switch';
 import { useSnippetList } from '@/options/hooks/useSnippetList';
-import type { CustomCopySnippet } from '@/types';
+import type { CustomCopySnippetContextMenu } from '@/types';
 
 export const SnippetCard = ({
   idx,
   snippet
 }: {
   idx: number;
-  snippet: CustomCopySnippet;
+  snippet: CustomCopySnippetContextMenu;
 }) => {
   const { setSnippet, deleteSnippet } = useSnippetList();
   return (
