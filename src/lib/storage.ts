@@ -64,7 +64,7 @@ class Storage {
       changes: { [key: string]: chrome.storage.StorageChange },
       areaName: chrome.storage.AreaName
     ) => {
-      if (areaName !== "local") return
+      if (areaName !== "sync") return
       if (!changes[key]) return
       storageLogger.debug(`Storage key changed: ${key}`, changes[key].newValue)
       cb((changes[key].newValue ?? null) as T | null)

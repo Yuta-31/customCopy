@@ -35,76 +35,81 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     // Load transform rules
     const transformRules: Array<URLTransformRule> = await storage.get("transformRules") || [];
     
-    contextMenus.forEach((element) => {
-      backgroundLogger.debug("Checking context menu item", {
-        menuItemId: info.menuItemId,
-        elementId: element.id
-      });
-      if (element.id === info.menuItemId) {
-        // replace text
-        let url = tab.url ?? ""
-        if (element.deleteQuery) {
-          url = stripQuery(url)
-        }
-        
-        // Apply enabled transform rules
-        if (element.enabledRuleIds && element.enabledRuleIds.length > 0) {
-          const enabledRules = transformRules.filter(rule => 
-            element.enabledRuleIds!.includes(rule.id)
-          );
-          
-          for (const rule of enabledRules) {
-            // Check domain filter if specified
-            if (rule.domain) {
-              try {
-                const urlObj = new URL(url);
-                const hostname = urlObj.hostname;
-                const domain = rule.domain;
-                const matchesDomain =
-                  hostname === domain || hostname.endsWith(`.${domain}`);
-                if (!matchesDomain) {
-                  continue; // Skip this rule if domain doesn't match
-                }
-              } catch (error) {
-                backgroundLogger.warn('Failed to parse URL for domain check', { url, error });
-                continue; // Skip if URL parsing fails
-              }
+    // Find the matching menu item
+    const matchedElement = contextMenus.find((element) => element.id === info.menuItemId);
+    
+    if (!matchedElement) {
+      backgroundLogger.debug("No matching context menu item found", { menuItemId: info.menuItemId });
+      return;
+    }
+    
+    backgroundLogger.debug("Context menu item matched", {
+      menuItemId: info.menuItemId,
+      elementId: matchedElement.id
+    });
+    
+    // replace text
+    let url = tab.url ?? ""
+    if (matchedElement.deleteQuery) {
+      url = stripQuery(url)
+    }
+    
+    // Apply enabled transform rules
+    if (matchedElement.enabledRuleIds && matchedElement.enabledRuleIds.length > 0) {
+      const enabledRules = transformRules.filter(rule => 
+        matchedElement.enabledRuleIds!.includes(rule.id)
+      );
+      
+      for (const rule of enabledRules) {
+        // Check domain filter if specified
+        if (rule.domain) {
+          try {
+            const urlObj = new URL(url);
+            const hostname = urlObj.hostname;
+            const domain = rule.domain;
+            const matchesDomain =
+              hostname === domain || hostname.endsWith(`.${domain}`);
+            if (!matchesDomain) {
+              continue; // Skip this rule if domain doesn't match
             }
-            
-            // Apply the transformation
-            url = transformUrl(url, rule.pattern, rule.replacement);
+          } catch (error) {
+            backgroundLogger.warn('Failed to parse URL for domain check', { url, error });
+            continue; // Skip if URL parsing fails
           }
         }
         
-        backgroundLogger.debug("Context menu clicked", { 
-          deleteQuery: element.deleteQuery, 
-          enabledRuleIds: element.enabledRuleIds,
-          url 
-        })
-        const replacedText = element.clipboardText
-          .replace("${title}", tab.title ?? "")
-          .replace("${url}", url)
-          .replace("${selectionText}", info.selectionText ?? "")
-        
-        if (!tab.id) {
-          backgroundLogger.error('Tab ID is missing, cannot send message');
-          return;
-        }
-        
-        chrome.tabs.sendMessage(tab.id, {
-          type: "contextMenu",
-          command: "on-click",
-          data: {
-            replacedText: replacedText
-          }
-        }, () => {
-          if (chrome.runtime.lastError) {
-            backgroundLogger.error('Failed to send message to content script', chrome.runtime.lastError);
-            return;
-          }
-          backgroundLogger.info("Text copied to clipboard", { replacedText });
-        });
+        // Apply the transformation
+        url = transformUrl(url, rule.pattern, rule.replacement);
       }
+    }
+    
+    backgroundLogger.debug("Context menu clicked", { 
+      deleteQuery: matchedElement.deleteQuery, 
+      enabledRuleIds: matchedElement.enabledRuleIds,
+      url 
     })
+    const replacedText = matchedElement.clipboardText
+      .replace("${title}", tab.title ?? "")
+      .replace("${url}", url)
+      .replace("${selectionText}", info.selectionText ?? "")
+    
+    if (!tab.id) {
+      backgroundLogger.error('Tab ID is missing, cannot send message');
+      return;
+    }
+    
+    chrome.tabs.sendMessage(tab.id, {
+      type: "contextMenu",
+      command: "on-click",
+      data: {
+        replacedText: replacedText
+      }
+    }, () => {
+      if (chrome.runtime.lastError) {
+        backgroundLogger.error('Failed to send message to content script', chrome.runtime.lastError);
+        return;
+      }
+      backgroundLogger.info("Text copied to clipboard", { replacedText });
+    });
   })()
 })

@@ -1,3 +1,7 @@
+import Logger from '@/lib/logger';
+
+const urlLogger = new Logger({ prefix: '[URL]' });
+
 /**
  * Transform URL using a regular expression pattern and replacement string
  * @param rawUrl - The URL to transform
@@ -32,7 +36,7 @@ export const transformUrl = (rawUrl: string, pattern: string, replacement: strin
     return rawUrl.replace(regex, replacement)
   } catch (error) {
     // If regex is invalid or transformation fails, return original URL
-    console.error('URL transformation failed:', error)
+    urlLogger.error('URL transformation failed:', error)
     return rawUrl
   }
 }

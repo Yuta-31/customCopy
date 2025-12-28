@@ -194,7 +194,7 @@ describe('Storage', () => {
           oldValue: null,
         },
       }
-      storageListener?.(changes, 'local')
+      storageListener?.(changes, 'sync')
 
       expect(callback).toHaveBeenCalledWith(testValue)
     })
@@ -217,12 +217,12 @@ describe('Storage', () => {
           oldValue: null,
         },
       }
-      storageListener?.(changes, 'local')
+      storageListener?.(changes, 'sync')
 
       expect(callback).not.toHaveBeenCalled()
     })
 
-    it('should not invoke callback for non-local area', () => {
+    it('should not invoke callback for non-sync area', () => {
       const testKey: StorageKey = 'contextMenus'
       const testValue = [{ id: '1', title: 'Updated' }]
       const callback = vi.fn()
@@ -234,14 +234,14 @@ describe('Storage', () => {
 
       storage.watch(testKey, callback)
 
-      // Simulate storage change in sync area (not local)
+      // Simulate storage change in local area (not sync)
       const changes = {
         [testKey]: {
           newValue: testValue,
           oldValue: null,
         },
       }
-      storageListener?.(changes, 'sync')
+      storageListener?.(changes, 'local')
 
       expect(callback).not.toHaveBeenCalled()
     })
@@ -264,7 +264,7 @@ describe('Storage', () => {
           oldValue: ['old value'],
         },
       }
-      storageListener?.(changes, 'local')
+      storageListener?.(changes, 'sync')
 
       expect(callback).toHaveBeenCalledWith(null)
     })

@@ -1,7 +1,10 @@
 import { createContext, useEffect, useState } from 'react';
 import { storage } from '@/lib/storage';
 import { generateRuleId, isRuleEqual } from '@/types';
+import Logger from '@/lib/logger';
 import type { URLTransformRule } from '@/types';
+
+const transformRuleLogger = new Logger({ prefix: '[TransformRule]' });
 
 export type TransformRuleListContextType = {
   rules: URLTransformRule[];
@@ -22,10 +25,13 @@ export const TransformRuleListProvider = ({ children }: { children: React.ReactN
       try {
         const storedRules = await storage.get<URLTransformRule[]>('transformRules');
         if (storedRules && Array.isArray(storedRules)) {
+          transformRuleLogger.info('Transform rules loaded from storage', { count: storedRules.length });
           setRules(storedRules);
+        } else {
+          transformRuleLogger.debug('No transform rules found in storage');
         }
       } catch (error) {
-        console.error('Failed to load transform rules from storage', error);
+        transformRuleLogger.error('Failed to load transform rules from storage', error);
       }
     };
     loadRules();
@@ -34,9 +40,11 @@ export const TransformRuleListProvider = ({ children }: { children: React.ReactN
   useEffect(() => {
     const saveRules = async () => {
       try {
+        transformRuleLogger.debug('Saving transform rules to storage', { count: rules.length });
         await storage.set('transformRules', rules);
+        transformRuleLogger.info('Transform rules saved successfully');
       } catch (error) {
-        console.error('Failed to save transform rules to storage', error);
+        transformRuleLogger.error('Failed to save transform rules to storage', error);
       }
     };
     saveRules();
