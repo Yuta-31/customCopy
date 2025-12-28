@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 class Logger {
   info(message: string, ...args: any[]): void {
-    console.log("aaa")
     chrome.runtime.sendMessage({
       type: "logger",
       command: "info",

@@ -3,6 +3,7 @@ import { storage } from '@/lib/storage';
 import { pickJsonFile } from '@/lib/file';
 import { toCustomCopySnippet, isSnippetEqual } from '@/types';
 import { snippetLogger } from '@/options/lib/logger';
+import { formatSnippet } from '@/options/lib/utils';
 import type { CustomCopySnippetContextMenu, CustomCopySnippet } from '@/types';
 
 interface SnippetListContextType {
@@ -46,7 +47,7 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
   useEffect(() => {
     (async () => {
       snippetLogger.debug('Saving snippets to storage', { count: snippets.length });
-      await storage.set('contextMenus', snippets);
+      await storage.set('contextMenus', formatSnippet(snippets.map(toCustomCopySnippet)));
       snippetLogger.info('Snippets saved successfully');
     })();
   }, [snippets]);
