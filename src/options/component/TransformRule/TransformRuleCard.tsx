@@ -20,7 +20,7 @@ const previewTransform = (url: string, pattern: string, replacement: string, dom
       if (urlObj.hostname !== domain) {
         return { success: false, result: url, error: `Domain mismatch (expected: ${domain})` };
       }
-    } catch (e) {
+    } catch {
       return { success: false, result: url, error: 'Invalid URL' };
     }
   }
@@ -53,7 +53,7 @@ export const TransformRuleCard = ({
   
   return (
     <Card 
-      key={idx}
+      key={rule.id ?? idx}
       className={isDeleteHovered ? 'animate-shake' : ''}
     >
       <CardHeader className="w-full">

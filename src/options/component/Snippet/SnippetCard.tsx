@@ -91,7 +91,7 @@ export const SnippetCard = ({
 
   return (
     <Card 
-      key={idx}
+      key={snippet.id || idx}
       className={isDeleteHovered ? 'animate-shake' : ''}
       >
       <CardHeader className="w-full">

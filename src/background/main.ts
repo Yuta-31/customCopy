@@ -58,7 +58,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             if (rule.domain) {
               try {
                 const urlObj = new URL(url);
-                if (!urlObj.hostname.includes(rule.domain)) {
+                const hostname = urlObj.hostname;
+                const domain = rule.domain;
+                const matchesDomain =
+                  hostname === domain || hostname.endsWith(`.${domain}`);
+                if (!matchesDomain) {
                   continue; // Skip this rule if domain doesn't match
                 }
               } catch {

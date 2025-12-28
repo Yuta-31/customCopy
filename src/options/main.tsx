@@ -53,6 +53,7 @@ const AppContent = () => {
 };
 
 const App = () => {
+  /* NOTE: SnippetListProvider depends on TransformRuleListContext, so it must be nested inside TransformRuleListProvider. Do not change this provider order. */
   return (
     <TransformRuleListProvider>
       <SnippetListProvider>
