@@ -1,11 +1,13 @@
 import { storage } from "@/lib/storage"
 import { stripQuery } from "@/lib/url"
+import { backgroundLogger } from "@/background/lib/logger"
 import { handleContextMenu } from "./messages/contextMenu"
-import type { CustomCopySnippet, Message } from "@/types"
+import type { CustomCopySnippetContextMenu, Message } from "@/types"
 
 // add message listener
 chrome.runtime.onMessage.addListener(
   (message: Message) => {
+    backgroundLogger.debug("Received message", message)
     switch (message.type) {
       case "contextMenu":
         handleContextMenu(message)
@@ -22,7 +24,7 @@ chrome.runtime.onMessage.addListener(
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (!tab) return;
   ;(async () => {
-    const contextMenus: Array<CustomCopySnippet> =
+    const contextMenus: Array<CustomCopySnippetContextMenu> =
       await storage.get("contextMenus")
     if (!contextMenus || !Array.isArray(contextMenus)) return;
     contextMenus.forEach((element) => {
@@ -32,7 +34,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
           if (element.deleteQuery) return stripQuery(tab.url ?? "")
           return tab.url ?? ""
         })()
-        console.log(element.deleteQuery, url)
+        backgroundLogger.debug("Context menu clicked", { deleteQuery: element.deleteQuery, url })
         const replacedText = element.clipboardText
           .replace("${title}", tab.title ?? "")
           .replace("${url}", url)
@@ -46,6 +48,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             replacedText: replacedText
           }
         })
+        backgroundLogger.info("Text copied to clipboard", { replacedText })
       }
     })
   })()
