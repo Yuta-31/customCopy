@@ -41,6 +41,10 @@ export const SnippetList = () => {
               <td className="py-2 font-mono">{'${selectionText}'}</td>
               <td className="py-2">Selected text</td>
             </tr>
+            <tr className="border-b">
+              <td className="py-2 font-mono">{'${section}'}</td>
+              <td className="py-2">Section heading</td>
+            </tr>
           </tbody>
         </table>
       </div>

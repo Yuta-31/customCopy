@@ -1,10 +1,11 @@
 // Message types for chrome.runtime communication
-export type MessageType = "relay" | "contextMenu" | "logger"
+export type MessageType = "relay" | "contextMenu" | "logger" | "getSectionHeading"
 
 export type MessageData = 
   | { type: "relay"; command: string; data?: unknown }
   | { type: "contextMenu"; command: "on-load" | "on-click"; data?: { replacedText?: string } }
   | { type: "logger"; command: "info" | "warn" | "error"; data: { message: string; args: unknown[] } }
+  | { type: "getSectionHeading"; command: "request"; data?: { sectionId: string } }
 
 export type Message = MessageData
 
