@@ -3,7 +3,7 @@
     "128": "icon128.png"
   },
   "manifest_version": 3,
-  "version": "1.1.0",
+  "version": "2.0.0",
   "name": "Custom Copy",
   "description": "コピーするときに任意の形式に整形できます。",
   "author": "yuta.ide.gt@outlook.jp",

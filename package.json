@@ -1,7 +1,7 @@
 {
   "name": "custom-copy",
   "displayName": "Custom Copy",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "コピーするときに任意の形式に整形できます。",
   "author": "yuta.ide.gt@outlook.jp",
   "scripts": {
