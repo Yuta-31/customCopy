@@ -39,21 +39,25 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
   const { exportRules, importRules } = transformRuleContext;
 
   const loadSnippets = async () => {
-    const fetchedSnippets: Array<CustomCopySnippetContextMenu> | undefined = await storage.get('contextMenus');
-    if (fetchedSnippets) {
-      snippetLogger.info('Snippets loaded from storage', { count: fetchedSnippets.length });
-      // Ensure all snippets have IDs
-      const snippetsWithIds = fetchedSnippets.map((snippet) => {
-        if (!snippet.id) {
-          const newId = generateSnippetId();
-          snippetLogger.warn('Snippet missing id, generating new one', { newId });
-          return { ...snippet, id: newId };
-        }
-        return snippet;
-      });
-      setSnippets(snippetsWithIds as unknown as Array<CustomCopySnippetContextMenu>);
-    } else {
-      snippetLogger.debug('No snippets found in storage');
+    try {
+      const fetchedSnippets: Array<CustomCopySnippetContextMenu> | undefined = await storage.get('contextMenus');
+      if (fetchedSnippets) {
+        snippetLogger.info('Snippets loaded from storage', { count: fetchedSnippets.length });
+        // Ensure all snippets have IDs
+        const snippetsWithIds = fetchedSnippets.map((snippet) => {
+          if (!snippet.id) {
+            const newId = generateSnippetId();
+            snippetLogger.warn('Snippet missing id, generating new one', { newId });
+            return { ...snippet, id: newId };
+          }
+          return snippet;
+        });
+        setSnippets(snippetsWithIds as unknown as Array<CustomCopySnippetContextMenu>);
+      } else {
+        snippetLogger.debug('No snippets found in storage');
+      }
+    } catch (error) {
+      snippetLogger.error('Failed to load snippets from storage', error);
     }
   };
 
@@ -63,9 +67,13 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
 
   useEffect(() => {
     (async () => {
-      snippetLogger.debug('Saving snippets to storage', { count: snippets.length });
-      await storage.set('contextMenus', formatSnippet(snippets.map(toCustomCopySnippet)));
-      snippetLogger.info('Snippets saved successfully');
+      try {
+        snippetLogger.debug('Saving snippets to storage', { count: snippets.length });
+        await storage.set('contextMenus', formatSnippet(snippets.map(toCustomCopySnippet)));
+        snippetLogger.info('Snippets saved successfully');
+      } catch (error) {
+        snippetLogger.error('Failed to save snippets to storage', error);
+      }
     })();
   }, [snippets]);
 
@@ -223,7 +231,11 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
 
     } catch (e) {
       snippetLogger.error('Upload failed', e);
-      alert("Failed to load JSON. Please check the file content.");
+      if (e instanceof SyntaxError) {
+        alert('Failed to import: Invalid JSON file format');
+      } else {
+        alert('Failed to load JSON. Please check the file content.');
+      }
     }
   };
 

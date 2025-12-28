@@ -65,7 +65,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 if (!matchesDomain) {
                   continue; // Skip this rule if domain doesn't match
                 }
-              } catch {
+              } catch (error) {
+                backgroundLogger.warn('Failed to parse URL for domain check', { url, error });
                 continue; // Skip if URL parsing fails
               }
             }
@@ -84,16 +85,25 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
           .replace("${title}", tab.title ?? "")
           .replace("${url}", url)
           .replace("${selectionText}", info.selectionText ?? "")
-        // TODO: handle error
-        if (!tab.id) return;
+        
+        if (!tab.id) {
+          backgroundLogger.error('Tab ID is missing, cannot send message');
+          return;
+        }
+        
         chrome.tabs.sendMessage(tab.id, {
           type: "contextMenu",
           command: "on-click",
           data: {
             replacedText: replacedText
           }
-        })
-        backgroundLogger.info("Text copied to clipboard", { replacedText })
+        }, () => {
+          if (chrome.runtime.lastError) {
+            backgroundLogger.error('Failed to send message to content script', chrome.runtime.lastError);
+            return;
+          }
+          backgroundLogger.info("Text copied to clipboard", { replacedText });
+        });
       }
     })
   })()

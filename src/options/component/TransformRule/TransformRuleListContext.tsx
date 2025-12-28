@@ -19,9 +19,13 @@ export const TransformRuleListProvider = ({ children }: { children: React.ReactN
 
   useEffect(() => {
     const loadRules = async () => {
-      const storedRules = await storage.get<URLTransformRule[]>('transformRules');
-      if (storedRules && Array.isArray(storedRules)) {
-        setRules(storedRules);
+      try {
+        const storedRules = await storage.get<URLTransformRule[]>('transformRules');
+        if (storedRules && Array.isArray(storedRules)) {
+          setRules(storedRules);
+        }
+      } catch (error) {
+        console.error('Failed to load transform rules from storage', error);
       }
     };
     loadRules();
@@ -29,7 +33,11 @@ export const TransformRuleListProvider = ({ children }: { children: React.ReactN
 
   useEffect(() => {
     const saveRules = async () => {
-      await storage.set('transformRules', rules);
+      try {
+        await storage.set('transformRules', rules);
+      } catch (error) {
+        console.error('Failed to save transform rules to storage', error);
+      }
     };
     saveRules();
   }, [rules]);

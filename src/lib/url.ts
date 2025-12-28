@@ -1,13 +1,3 @@
-export const stripQuery = (rawUrl: string): string => {
-  try {
-    const url = new URL(rawUrl)
-    url.search = ""
-    return url.toString()
-  } catch {
-    return rawUrl
-  }
-}
-
 /**
  * Transform URL using a regular expression pattern and replacement string
  * @param rawUrl - The URL to transform
@@ -26,7 +16,7 @@ export const stripQuery = (rawUrl: string): string => {
  */
 export const transformUrl = (rawUrl: string, pattern: string, replacement: string): string => {
   try {
-    if (!pattern || !replacement) {
+    if (!pattern || replacement === undefined || replacement === null) {
       return rawUrl
     }
     
