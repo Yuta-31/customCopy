@@ -11,7 +11,7 @@ import {
 import { useSnippetList } from '@/options/hooks/useSnippetList';
 
 export const SnippetEmptyView = () => {
-  const { createEmptySnippet, importSnippets } = useSnippetList();
+  const { createEmptySnippet } = useSnippetList();
 
   return (
     <Empty>
@@ -26,10 +26,7 @@ export const SnippetEmptyView = () => {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <div className="flex gap-2">
-          <Button onClick={createEmptySnippet}>Create Snippet</Button>
-          <Button variant="outline" onClick={importSnippets}>Import Snippet</Button>
-        </div>
+        <Button onClick={createEmptySnippet}>Create Snippet</Button>
       </EmptyContent>
     </Empty>
   )

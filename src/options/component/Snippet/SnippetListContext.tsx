@@ -1,10 +1,11 @@
-import { createContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useState, useEffect, useContext, type ReactNode } from 'react';
 import { storage } from '@/lib/storage';
 import { pickJsonFile } from '@/lib/file';
-import { toCustomCopySnippet, isSnippetEqual } from '@/types';
+import { toCustomCopySnippet, isSnippetEqual, generateSnippetId } from '@/types';
+import { TransformRuleListContext } from '@/options/component/TransformRule/TransformRuleListContext';
 import { snippetLogger } from '@/options/lib/logger';
 import { formatSnippet } from '@/options/lib/utils';
-import type { CustomCopySnippetContextMenu, CustomCopySnippet } from '@/types';
+import type { CustomCopySnippetContextMenu, CustomCopySnippet, ExportData, URLTransformRule } from '@/types';
 
 interface SnippetListContextType {
   snippets: Array<CustomCopySnippetContextMenu>;
@@ -18,7 +19,7 @@ interface SnippetListContextType {
   createEmptySnippet: () => void;
   refreshSnippets: () => Promise<void>;
   importSnippets: () => Promise<void>;
-  exportSnippets: () => CustomCopySnippet[];
+  exportSnippets: () => ExportData;
 }
 
 export const SnippetListContext = createContext<SnippetListContextType | undefined>(undefined);
@@ -29,12 +30,28 @@ interface SnippetListProviderProps {
 
 export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
   const [snippets, setSnippets] = useState<Array<CustomCopySnippetContextMenu>>([]);
+  const transformRuleContext = useContext(TransformRuleListContext);
+
+  if (!transformRuleContext) {
+    throw new Error('SnippetListProvider must be used within TransformRuleListProvider');
+  }
+
+  const { exportRules, importRules } = transformRuleContext;
 
   const loadSnippets = async () => {
     const fetchedSnippets: Array<CustomCopySnippetContextMenu> | undefined = await storage.get('contextMenus');
     if (fetchedSnippets) {
       snippetLogger.info('Snippets loaded from storage', { count: fetchedSnippets.length });
-      setSnippets(fetchedSnippets as unknown as Array<CustomCopySnippetContextMenu>);
+      // Ensure all snippets have IDs
+      const snippetsWithIds = fetchedSnippets.map((snippet) => {
+        if (!snippet.id) {
+          const newId = generateSnippetId();
+          snippetLogger.warn('Snippet missing id, generating new one', { newId });
+          return { ...snippet, id: newId };
+        }
+        return snippet;
+      });
+      setSnippets(snippetsWithIds as unknown as Array<CustomCopySnippetContextMenu>);
     } else {
       snippetLogger.debug('No snippets found in storage');
     }
@@ -76,7 +93,7 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
   const createEmptySnippet = () => {
     const newSnippets = [...snippets];
     const newSnippet: CustomCopySnippetContextMenu = {
-      id: `custom-copy-${Date.now()}`,
+      id: generateSnippetId(),
       title: 'title',
       type: 'normal',
       contexts: ['selection'],
@@ -91,8 +108,11 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
     await loadSnippets();
   };
 
-  const exportSnippets = (): CustomCopySnippet[] => {
-    return snippets.map(toCustomCopySnippet);
+  const exportSnippets = (): ExportData => {
+    return {
+      snippets: snippets.map(snippet => toCustomCopySnippet(snippet)),
+      rules: exportRules(),
+    };
   };
 
   const importSnippets = async () => {
@@ -105,43 +125,105 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
     try {
       snippetLogger.info('Uploading snippets from file', { fileName: file.name });
       const text = await file.text();
-      const parsed: CustomCopySnippet[] = JSON.parse(text);
+      const parsed: ExportData = JSON.parse(text);
 
+      // Handle old format (array of snippets without rules)
+      let importedSnippets: CustomCopySnippet[];
+      let importedRules: URLTransformRule[] = [];
+      
+      if (Array.isArray(parsed)) {
+        // Old format: just an array of snippets
+        importedSnippets = parsed.map(s => ({
+          ...s,
+          id: s.id || generateSnippetId()
+        }));
+      } else {
+        // New format: object with snippets and rules
+        importedSnippets = parsed.snippets || [];
+        importedRules = parsed.rules || [];
+      }
+
+      // First, import rules and get id mapping
+      const ruleIdMapping = importRules(importedRules);
+      
       // TODO: do validation
       const existingSnippets = snippets.map(toCustomCopySnippet);
-      const newSnippets: CustomCopySnippetContextMenu[] = parsed
+      
+      // Create a Set of existing IDs for uniqueness check
+      const existingIds = new Set(existingSnippets.map(s => s.id));
+      
+      const newSnippets: CustomCopySnippetContextMenu[] = importedSnippets
         .filter((importedSnippet) => {
           const isDuplicate = existingSnippets.some((existing) => 
             isSnippetEqual(existing, importedSnippet)
           );
           return !isDuplicate;
         })
-        .map((snippet) => ({
-          id: `custom-copy-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-          type: 'normal' as const,
-          ...snippet,
-        }));
+        .map((snippet) => {
+          // Generate unique ID
+          let newId = generateSnippetId();
+          while (existingIds.has(newId)) {
+            newId = generateSnippetId();
+          }
+          existingIds.add(newId);
+          
+          // Map enabledRuleIds using the rule id mapping
+          let mappedRuleIds = snippet.enabledRuleIds;
+          if (mappedRuleIds && ruleIdMapping.size > 0) {
+            mappedRuleIds = mappedRuleIds.map(oldId => 
+              ruleIdMapping.get(oldId) || oldId
+            );
+          }
+          
+          return {
+            ...snippet,
+            id: newId,
+            type: 'normal' as const,
+            enabledRuleIds: mappedRuleIds,
+          };
+        });
 
-      const duplicateCount = parsed.length - newSnippets.length;
+      const duplicateCount = importedSnippets.length - newSnippets.length;
+      const importedRuleCount = importedRules.length;
+      const newRuleCount = Array.from(ruleIdMapping.values()).filter((newId, index) => {
+        const oldId = Array.from(ruleIdMapping.keys())[index];
+        return newId !== oldId || !importedRules.find(r => r.id === oldId);
+      }).length;
       
       if (duplicateCount > 0) {
         snippetLogger.info('Duplicates skipped', { count: duplicateCount });
       }
       
       setSnippets([...snippets, ...newSnippets]);
-      snippetLogger.info('Snippets imported successfully', { 
-        imported: newSnippets.length, 
-        skipped: duplicateCount,
-        total: snippets.length + newSnippets.length 
+      snippetLogger.info('Import completed successfully', { 
+        importedSnippets: newSnippets.length, 
+        skippedSnippets: duplicateCount,
+        importedRules: importedRuleCount,
+        newRules: newRuleCount,
+        totalSnippets: snippets.length + newSnippets.length 
       });
 
-      if (duplicateCount > 0) {
-        alert(`${newSnippets.length} 件のスニペットをインポートしました。${duplicateCount} 件の重複はスキップされました。`);
+      if (duplicateCount > 0 || importedRuleCount > 0) {
+        const messages = [];
+        if (newSnippets.length > 0) {
+          messages.push(`Imported ${newSnippets.length} snippet(s)`);
+        }
+        if (duplicateCount > 0) {
+          messages.push(`Skipped ${duplicateCount} duplicate snippet(s)`);
+        }
+        if (importedRuleCount > 0) {
+          const duplicateRules = importedRuleCount - newRuleCount;
+          messages.push(`Imported ${newRuleCount} new rule(s)`);
+          if (duplicateRules > 0) {
+            messages.push(`Mapped ${duplicateRules} duplicate rule(s) to existing rules`);
+          }
+        }
+        alert(messages.join('\n'));
       }
 
     } catch (e) {
       snippetLogger.error('Upload failed', e);
-      alert("JSON の読み込みに失敗しました。ファイル内容を確認してください。");
+      alert("Failed to load JSON. Please check the file content.");
     }
   };
 
