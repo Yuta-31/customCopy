@@ -17,7 +17,11 @@ const getSectionHeadingText = (sectionId: string): string => {
     }
     
     // Try to find element with name attribute (for older HTML)
-    const namedElement = document.querySelector(`[name="${sectionId}"]`)
+    const safeSectionId =
+      typeof CSS !== "undefined" && typeof CSS.escape === "function"
+        ? CSS.escape(sectionId)
+        : sectionId.replace(/["\\\[\]]/g, "\\$&")
+    const namedElement = document.querySelector(`[name="${safeSectionId}"]`)
     if (namedElement) {
       return namedElement.textContent?.trim() ?? ''
     }
