@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { TransformRuleListContext } from '@/options/component/TransformRule/TransformRuleListContext';
+import { generateRuleId } from '@/types';
 import type { URLTransformRule } from '@/types';
 
 export const useTransformRuleList = () => {
@@ -12,7 +13,7 @@ export const useTransformRuleList = () => {
 
   const addRule = () => {
     const newRule: URLTransformRule = {
-      id: `rule-${Date.now()}`,
+      id: generateRuleId(),
       title: '',
       domain: '',
       pattern: '',

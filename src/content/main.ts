@@ -10,7 +10,12 @@ window.addEventListener("load", () => {
       if (message.command !== "on-click") return
       const result = message.data.replacedText
       navigator.clipboard.writeText(result)
-      contentLogger.info("Text copied to clipboard", { text: result })
+        .then(() => {
+          contentLogger.info("Text copied to clipboard", { text: result })
+        })
+        .catch((error) => {
+          contentLogger.error("Failed to copy text to clipboard", error)
+        })
     }
   )
   chrome.runtime.sendMessage({

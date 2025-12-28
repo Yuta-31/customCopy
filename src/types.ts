@@ -1,10 +1,12 @@
-// TODO: make the type name more specific
- 
-export type Message = {
-  type: "relay" | "contextMenu" | "logger"
-  command: string
-  data?: any
-}
+// Message types for chrome.runtime communication
+export type MessageType = "relay" | "contextMenu" | "logger"
+
+export type MessageData = 
+  | { type: "relay"; command: string; data?: unknown }
+  | { type: "contextMenu"; command: "on-load" | "on-click"; data?: { replacedText?: string } }
+  | { type: "logger"; command: "info" | "warn" | "error"; data: { message: string; args: unknown[] } }
+
+export type Message = MessageData
 
 export type URLTransformRule = {
   id: string

@@ -1,12 +1,6 @@
-export const stripQuery = (rawUrl: string): string => {
-  try {
-    const url = new URL(rawUrl)
-    url.search = ""
-    return url.toString()
-  } catch {
-    return rawUrl
-  }
-}
+import Logger from '@/lib/logger';
+
+const urlLogger = new Logger({ prefix: '[URL]' });
 
 /**
  * Transform URL using a regular expression pattern and replacement string
@@ -26,7 +20,7 @@ export const stripQuery = (rawUrl: string): string => {
  */
 export const transformUrl = (rawUrl: string, pattern: string, replacement: string): string => {
   try {
-    if (!pattern || !replacement) {
+    if (!pattern || replacement === undefined || replacement === null) {
       return rawUrl
     }
     
@@ -42,7 +36,7 @@ export const transformUrl = (rawUrl: string, pattern: string, replacement: strin
     return rawUrl.replace(regex, replacement)
   } catch (error) {
     // If regex is invalid or transformation fails, return original URL
-    console.error('URL transformation failed:', error)
+    urlLogger.error('URL transformation failed:', error)
     return rawUrl
   }
 }
