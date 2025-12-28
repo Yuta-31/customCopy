@@ -1,9 +1,9 @@
 import { storage } from "@/lib/storage"
-import { stripQuery } from "@/lib/url"
+import { stripQuery, transformUrl } from "@/lib/url"
 import { backgroundLogger } from "@/background/lib/logger"
 import { handleContextMenu } from "./messages/contextMenu"
 import { logging } from "./messages/logger"
-import type { CustomCopySnippetContextMenu, Message } from "@/types"
+import type { CustomCopySnippetContextMenu, URLTransformRule, Message } from "@/types"
 
 // add message listener
 chrome.runtime.onMessage.addListener(
@@ -31,14 +31,51 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     const contextMenus: Array<CustomCopySnippetContextMenu> =
       await storage.get("contextMenus")
     if (!contextMenus || !Array.isArray(contextMenus)) return;
+    
+    // Load transform rules
+    const transformRules: Array<URLTransformRule> = await storage.get("transformRules") || [];
+    
     contextMenus.forEach((element) => {
+      backgroundLogger.debug("Checking context menu item", {
+        menuItemId: info.menuItemId,
+        elementId: element.id
+      });
       if (element.id === info.menuItemId) {
         // replace text
-        const url = (() => {
-          if (element.deleteQuery) return stripQuery(tab.url ?? "")
-          return tab.url ?? ""
-        })()
-        backgroundLogger.debug("Context menu clicked", { deleteQuery: element.deleteQuery, url })
+        let url = tab.url ?? ""
+        if (element.deleteQuery) {
+          url = stripQuery(url)
+        }
+        
+        // Apply enabled transform rules
+        if (element.enabledRuleIds && element.enabledRuleIds.length > 0) {
+          const enabledRules = transformRules.filter(rule => 
+            element.enabledRuleIds!.includes(rule.id)
+          );
+          
+          for (const rule of enabledRules) {
+            // Check domain filter if specified
+            if (rule.domain) {
+              try {
+                const urlObj = new URL(url);
+                if (!urlObj.hostname.includes(rule.domain)) {
+                  continue; // Skip this rule if domain doesn't match
+                }
+              } catch {
+                continue; // Skip if URL parsing fails
+              }
+            }
+            
+            // Apply the transformation
+            url = transformUrl(url, rule.pattern, rule.replacement);
+          }
+        }
+        
+        backgroundLogger.debug("Context menu clicked", { 
+          deleteQuery: element.deleteQuery, 
+          enabledRuleIds: element.enabledRuleIds,
+          url 
+        })
         const replacedText = element.clipboardText
           .replace("${title}", tab.title ?? "")
           .replace("${url}", url)

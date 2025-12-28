@@ -12,18 +12,18 @@ export const handleContextMenu = (message: Message) => {
         chrome.contextMenus.removeAll(() => {
           if (Array.isArray(contextMenus)) {
             contextMenus.forEach((element) => {
-              backgroundLogger.debug("Context menu creating", { 
+              if (!element.id) {
+                backgroundLogger.warn("Context menu item missing id, skipping", { element })
+                return;
+              }
+              const context = { 
                 id: element.id, 
                 title: element.title,
                 type: element.type,
                 contexts: element.contexts 
-              })
-              const res = chrome.contextMenus.create({
-                id: element.id,
-                title: element.title,
-                type: element.type,
-                contexts: element.contexts
-              })
+              };
+              backgroundLogger.debug("Context menu creating", context);
+              const res = chrome.contextMenus.create(context);
               backgroundLogger.debug("Context menu created", { id: element.id, result: res })
             })
           }
