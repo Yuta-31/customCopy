@@ -47,7 +47,7 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
   useEffect(() => {
     (async () => {
       snippetLogger.debug('Saving snippets to storage', { count: snippets.length });
-      await storage.set('contextMenus', formatSnippet(snippets));
+      await storage.set('contextMenus', formatSnippet(snippets.map(toCustomCopySnippet)));
       snippetLogger.info('Snippets saved successfully');
     })();
   }, [snippets]);
