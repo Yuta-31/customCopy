@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   root: "src",
   publicDir: "../public",
   plugins: [react(), tailwindcss()],
@@ -23,4 +23,7 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-});
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || mode),
+  },
+}));

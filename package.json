@@ -8,7 +8,8 @@
     "dev": "vite",
     "build:ui": "tsc -b && vite build",
     "build:bg": "tsc -b && vite build --config vite.background.config.ts",
-    "build": "npm run build:ui && npm run build:bg",
+    "build": "cross-env NODE_ENV=development npm run build:ui && cross-env NODE_ENV=development npm run build:bg",
+    "build:prod": "cross-env NODE_ENV=production npm run build:ui && cross-env NODE_ENV=production npm run build:bg",
     "lint": "eslint .",
     "test": "vitest"
   },
@@ -34,6 +35,7 @@
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.0",
     "@vitest/ui": "^4.0.14",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.1",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",

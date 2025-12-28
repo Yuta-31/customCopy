@@ -2,6 +2,7 @@ import { storage } from "@/lib/storage"
 import { stripQuery } from "@/lib/url"
 import { backgroundLogger } from "@/background/lib/logger"
 import { handleContextMenu } from "./messages/contextMenu"
+import { logging } from "./messages/logger"
 import type { CustomCopySnippetContextMenu, Message } from "@/types"
 
 // add message listener
@@ -13,6 +14,9 @@ chrome.runtime.onMessage.addListener(
         handleContextMenu(message)
         return
       case "relay":
+        return
+      case "logger":
+        logging(message);
         return
       default:
         return

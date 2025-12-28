@@ -1,6 +1,6 @@
 // TODO: make the type name more specific
 export type Message = {
-  type: "relay" | "contextMenu"
+  type: "relay" | "contextMenu" | "logger"
   command: string
   data?: any
 }
