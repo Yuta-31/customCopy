@@ -6,6 +6,7 @@ export type Message = {
 }
 
 export type CustomCopySnippet = {
+  title: string
   clipboardText: string
   deleteQuery?: boolean | undefined
   contexts?: [`${chrome.contextMenus.ContextType}`, ...`${chrome.contextMenus.ContextType}`[]];
@@ -17,6 +18,7 @@ export type StorageKey = 'contextMenus'
 
 export const toCustomCopySnippet = (snippet: CustomCopySnippetContextMenu): CustomCopySnippet => {
   return {
+    title: snippet.title,
     clipboardText: snippet.clipboardText,
     deleteQuery: snippet.deleteQuery,
     contexts: snippet.contexts,

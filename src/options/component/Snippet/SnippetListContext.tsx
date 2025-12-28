@@ -117,7 +117,6 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
         })
         .map((snippet) => ({
           id: `custom-copy-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-          title: 'imported snippet',
           type: 'normal' as const,
           ...snippet,
         }));
