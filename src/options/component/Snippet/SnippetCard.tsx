@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Switch } from '@/components/ui/switch';
 import { useSnippetList } from '@/options/hooks/useSnippetList';
 import { storage } from '@/lib/storage';
 import type { CustomCopySnippetContextMenu, URLTransformRule } from '@/types';
@@ -80,6 +79,17 @@ export const SnippetCard = ({
       }
     };
     loadRules();
+    
+    // Watch for changes to transformRules
+    const unwatch = storage.watch<URLTransformRule[]>('transformRules', (updatedRules) => {
+      if (updatedRules && Array.isArray(updatedRules)) {
+        setRules(updatedRules);
+      }
+    });
+    
+    return () => {
+      unwatch();
+    };
   }, []);
 
   const toggleRule = (ruleId: string) => {
@@ -141,11 +151,25 @@ export const SnippetCard = ({
               Options
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <div>delete query</div>
-                <Switch checked={snippet.deleteQuery} onCheckedChange={(checked) => {
-                  setSnippet(idx, 'deleteQuery', checked);
-                }} />
+              <div className="flex items-center justify-between pt-2 border-t">
+                <div className="flex flex-col">
+                  <div className="text-sm">Keyboard Shortcut</div>
+                  <div className="text-xs text-stone-500">Assign Ctrl+Shift+[1-5]</div>
+                </div>
+                <select
+                  value={snippet.shortcutNumber || ''}
+                  onChange={(e) => {
+                    const value = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
+                    setSnippet(idx, 'shortcutNumber', value);
+                  }}
+                  className="px-3 py-1.5 border rounded-md text-sm bg-white"
+                >
+                  <option value="">None</option>
+                  <option value="1">Ctrl+Shift+1</option>
+                  <option value="2">Ctrl+Shift+2</option>
+                  <option value="3">Ctrl+Shift+3</option>
+                  <option value="4">Ctrl+Shift+4</option>
+                </select>
               </div>
               
               {rules.length > 0 && (

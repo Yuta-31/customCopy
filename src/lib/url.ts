@@ -68,14 +68,3 @@ export const extractSectionHeading = (url: string): string => {
     return '';
   }
 };
-
-export const stripQuery = (url: string): string => {
-  try {
-    const urlObj = new URL(url);
-    urlObj.search = '';
-    return urlObj.toString();
-  } catch (error) {
-    urlLogger.error('Failed to strip query:', error);
-    return url;
-  }
-};

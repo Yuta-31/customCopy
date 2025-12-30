@@ -3,15 +3,43 @@
     "128": "icon128.png"
   },
   "manifest_version": 3,
-  "version": "2.0.0",
+  "version": "2.1.0",
   "name": "Custom Copy",
   "description": "コピーするときに任意の形式に整形できます。",
   "author": "yuta.ide.gt@outlook.jp",
   "permissions": [
     "storage",
     "clipboardWrite",
-    "contextMenus"
+    "contextMenus",
+    "activeTab",
+    "tabs"
   ],
+  "commands": {
+    "execute-snippet-1": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+1"
+      },
+      "description": "Execute custom copy snippet 1"
+    },
+    "execute-snippet-2": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+2"
+      },
+      "description": "Execute custom copy snippet 2"
+    },
+    "execute-snippet-3": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+3"
+      },
+      "description": "Execute custom copy snippet 3"
+    },
+    "execute-snippet-4": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+4"
+      },
+      "description": "Execute custom copy snippet 4"
+    }
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"

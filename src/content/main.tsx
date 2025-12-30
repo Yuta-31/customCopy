@@ -1,3 +1,5 @@
+import { createRoot } from 'react-dom/client'
+import { ContentApp } from './ContentApp'
 import { contentLogger } from "./lib/logger"
 import type { Message } from "@/types"
 
@@ -35,6 +37,16 @@ const getSectionHeadingText = (sectionId: string): string => {
 
 window.addEventListener("load", () => {
   contentLogger.info("Window loaded")
+  
+  // Mount React app for toast notifications
+  const toastRoot = document.createElement('div')
+  toastRoot.id = 'custom-copy-toast-root'
+  toastRoot.style.cssText = 'position: fixed; z-index: 2147483647;'
+  document.body.appendChild(toastRoot)
+  
+  const root = createRoot(toastRoot)
+  root.render(<ContentApp />)
+  
   chrome.runtime.onMessage.addListener(
     (message: Message, _sender, sendResponse) => {
       contentLogger.info("Received message", message)
@@ -47,18 +59,25 @@ window.addEventListener("load", () => {
         return true
       }
       
-      if (message.type === "contextMenu") {
-        if (message.command !== "on-click") return
-        if (!message.data?.replacedText) return
-        const result = message.data.replacedText
-        navigator.clipboard.writeText(result)
-          .then(() => {
-            contentLogger.info("Text copied to clipboard", { text: result })
-          })
-          .catch((error) => {
-            contentLogger.error("Failed to copy text to clipboard", error)
-          })
+      if (message.type === "getSelection") {
+        const selectionText = window.getSelection()?.toString() ?? ''
+        contentLogger.info("Selection retrieved", { selectionText })
+        sendResponse({ selectionText })
+        return true
       }
+      
+      if (message.type === "getPageInfo") {
+        const pageInfo = {
+          title: document.title,
+          url: window.location.href,
+          selectionText: window.getSelection()?.toString() ?? ''
+        }
+        contentLogger.info("Page info retrieved", pageInfo)
+        sendResponse(pageInfo)
+        return true
+      }
+      
+      // Toast handling is now in ContentApp.tsx
     }
   )
   chrome.runtime.sendMessage({

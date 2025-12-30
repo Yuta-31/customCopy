@@ -3,7 +3,7 @@ import { vi } from 'vitest'
 // Mock Chrome API
 global.chrome = {
   storage: {
-    sync: {
+    local: {
       get: vi.fn(),
       set: vi.fn(),
       remove: vi.fn(),

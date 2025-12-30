@@ -5,7 +5,7 @@ class Storage {
   async get<T = unknown>(key: StorageKey): Promise<T> {
     return new Promise((resolve, reject) => {
       try {
-        chrome.storage.sync.get([key], (result) => {
+        chrome.storage.local.get([key], (result) => {
           if (chrome.runtime.lastError) {
             storageLogger.error(`Failed to get storage key: ${key}`, chrome.runtime.lastError)
             reject(chrome.runtime.lastError)
@@ -24,7 +24,7 @@ class Storage {
   async set<T = unknown>(key: StorageKey, value: T): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        chrome.storage.sync.set({ [key]: value }, () => {
+        chrome.storage.local.set({ [key]: value }, () => {
           if (chrome.runtime.lastError) {
             storageLogger.error(`Failed to set storage key: ${key}`, chrome.runtime.lastError)
             reject(chrome.runtime.lastError)
@@ -43,7 +43,7 @@ class Storage {
   async remove(key: string | string[]): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        chrome.storage.sync.remove(key, () => {
+        chrome.storage.local.remove(key, () => {
           if (chrome.runtime.lastError) {
             storageLogger.error(`Failed to remove storage key: ${key}`, chrome.runtime.lastError)
             reject(chrome.runtime.lastError)
@@ -64,7 +64,7 @@ class Storage {
       changes: { [key: string]: chrome.storage.StorageChange },
       areaName: chrome.storage.AreaName
     ) => {
-      if (areaName !== "sync") return
+      if (areaName !== "local") return
       if (!changes[key]) return
       storageLogger.debug(`Storage key changed: ${key}`, changes[key].newValue)
       cb((changes[key].newValue ?? null) as T | null)

@@ -1,8 +1,8 @@
 import { X } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { URLTransformRule } from '@/types';
 import { useTransformRuleList } from '@/options/hooks/useTransformRuleList';
+import type { URLTransformRule } from '@/types';
 
 const previewTransform = (url: string, pattern: string, replacement: string, domain?: string): { success: boolean; result: string; error?: string } => {
   if (!url) {
@@ -98,7 +98,7 @@ export const TransformRuleCard = ({
           <label className="text-xs text-stone-600">Pattern (Regular Expression)</label>
           <input
             className="w-full px-2 py-1 text-sm border rounded font-mono"
-            placeholder="e.g., ^(https://support\.microsoft\.com/[^/]+/[^/]+/).*?([a-f0-9-]+)$"
+            placeholder="e.g., ^(https://support\.microsoft\.com/[^/]+/[^/]+/).+?([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$"
             value={rule.pattern}
             onChange={(e) => {
               setRule(idx, 'pattern', e.target.value);
