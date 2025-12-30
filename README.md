@@ -5,228 +5,230 @@
 ![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-テキストをコピーする際に、任意の形式に自動整形できるChrome拡張機能です。
+A Chrome extension that automatically formats text into any desired format when copying.
 
-[Chrome Web Store](https://chromewebstore.google.com/detail/custom-copy/mdkihjamcddnifdkigeigifgoafgkfbi) | [使い方](#使用方法) | [機能](#主な機能)
+[Chrome Web Store](https://chromewebstore.google.com/detail/custom-copy/mdkihjamcddnifdkigeigifgoafgkfbi) | [Usage](#usage) | [Features](#key-features)
+
+[日本語版 README](./README.ja.md)
 
 </div>
 
 ---
 
-## 📖 概要
+## 📖 Overview
 
-**Custom Copy** は、Webページからテキストをコピーする際に、事前に設定したテンプレートに基づいて自動的に整形してクリップボードにコピーできる Chrome 拡張機能です。
+**Custom Copy** is a Chrome extension that automatically formats text based on predefined templates when copying from web pages to the clipboard.
 
-マークダウン形式でのリンク作成、引用形式でのコピー、独自フォーマットでの情報整理など、様々なシーンで活用できます。
+It can be used in various scenarios such as creating links in Markdown format, copying in citation format, or organizing information in custom formats.
 
-### 主な機能
+### Key Features
 
-- ✨ **カスタムテンプレート**: 自由にテンプレートを作成・管理
-- 🔄 **変数置換**: ページタイトル、URL、選択テキストを自動挿入
-- 🎯 **右クリックメニュー**: コンテキストメニューから簡単にアクセス
-- ⌨️ **キーボードショートカット**: Ctrl+Shift+1 ~ 4 で素早くコピー
-- 📝 **複数テンプレート**: 用途に応じて複数のテンプレートを使い分け
-- 🎨 **直感的なUI**: わかりやすいオプション画面で簡単設定
-- 🔍 **変換ルール**: URLを正規表現で変換可能
+- ✨ **Custom Templates**: Create and manage templates freely
+- 🔄 **Variable Substitution**: Automatically insert page title, URL, and selected text
+- 🎯 **Right-Click Menu**: Easy access from the context menu
+- ⌨️ **Keyboard Shortcuts**: Quick copy with Ctrl+Shift+1 ~ 4
+- 📝 **Multiple Templates**: Use different templates for different purposes
+- 🎨 **Intuitive UI**: Easy setup with a user-friendly options page
+- 🔍 **Transform Rules**: Convert URLs using regular expressions
 
 ---
 
-## 🚀 使用方法
+## 🚀 Usage
 
-### 1. テンプレートの作成
+### 1. Create a Template
 
-拡張機能アイコンをクリックして「オプション」を開き、新しいテンプレートを作成します。
+Click on the extension icon and open "Options" to create a new template.
 
-![オプション画面](./docs/images/options.png)
+![Options Page](./docs/images/options.png)
 
-**例: マークダウンリンク形式**
+**Example: Markdown Link Format**
 ```
 [${selectionText}](${url})
 ```
 
-**例: 引用形式**
+**Example: Citation Format**
 ```
 > ${selectionText}
-出典: ${title} (${url})
+Source: ${title} (${url})
 ```
 
-### 2. テキストの選択とコピー
+### 2. Select and Copy Text
 
-1. Web ページ上でコピーしたいテキストを選択
-2. 右クリックしてコンテキストメニューを表示
-3. [Custom Copy] > 作成したテンプレート名を選択
-   ※ テンプレートが 1 つの場合にはそのテンプレートのみが表示されます。
+1. Select the text you want to copy on a web page
+2. Right-click to display the context menu
+3. Select [Custom Copy] > your template name
+   ※ If there is only one template, only that template will be displayed.
 
-![コンテキストメニュー](./docs/images/context-menu.png)
+![Context Menu](./docs/images/context-menu.png)
 
-### 3. キーボードショートカットの設定（オプション）
+### 3. Set Keyboard Shortcuts (Optional)
 
-よく使うスニペットにキーボードショートカットを割り当てることができます。
+You can assign keyboard shortcuts to frequently used snippets.
 
-1. オプション画面で各スニペットの「Options」を展開
-2. 「Keyboard Shortcut」から Ctrl+Shift+1 ~ 4 のいずれかを選択
-3. ページ上でテキストを選択し、設定したショートカットキーを押すだけでコピー完了
+1. Expand "Options" for each snippet on the options page
+2. Select one of Ctrl+Shift+1 ~ 4 from "Keyboard Shortcut"
+3. Simply select text on a page and press the configured shortcut key to copy
 
-**注意**: 複数のスニペットに同じショートカットを割り当てた場合、最初に見つかったスニペットが実行されます。
+**Note**: If multiple snippets are assigned the same shortcut, the first snippet found will be executed.
 
-### 4. クリップボードにコピー完了
+### 4. Copied to Clipboard
 
-選択したテンプレート形式で、クリップボードにコピーされます。
+The text is copied to the clipboard in the selected template format.
 
 ---
 
-## 📋 テンプレート変数
+## 📋 Template Variables
 
-テンプレート内で以下の変数を使用できます：
+You can use the following variables in templates:
 
-| 変数 | 説明 | 例 |
+| Variable | Description | Example |
 | --- | --- | --- |
-| `${title}` | ページのタイトル | `GitHub - トップページ` |
-| `${url}` | ページのURL | `https://github.com` |
-| `${selectionText}` | 選択したテキスト | `選択された任意のテキスト` |
-| `${section}` | 選択したテキストの最も近い見出し（h1-h6） | `はじめに` |
+| `${title}` | Page title | `GitHub - Top Page` |
+| `${url}` | Page URL | `https://github.com` |
+| `${selectionText}` | Selected text | `Any selected text` |
+| `${section}` | Nearest heading (h1-h6) to selected text | `Introduction` |
 
 ---
 
-## 🔧 変換ルール
+## 🔧 Transform Rules
 
-ページのURLを正規表現を使って変換することができます。テンプレートとは別に「変換ルール」を設定することで、`${url}` 変数の値を自動的に加工できます。
+You can convert page URLs using regular expressions. By setting "Transform Rules" separately from templates, you can automatically modify the value of the `${url}` variable.
 
-### 使用例
+### Usage Example
 
-**変換ルール設定:**
-- 検索パターン: `https://`
-- 置換文字列: `http://`
+**Transform Rule Setting:**
+- Search Pattern: `https://`
+- Replacement String: `http://`
 
-**結果:**
-URLのプロトコル部分が `https://` から `http://` に変換されます。
+**Result:**
+The protocol part of the URL is converted from `https://` to `http://`.
 
-**活用例:**
-- URLのクエリパラメータを削除
-- 特定のドメイン部分を置換
-- URLの一部を短縮形式に変換
+**Use Cases:**
+- Remove URL query parameters
+- Replace specific domain parts
+- Convert parts of URLs to shortened forms
 
 ---
 
-## 💡 テンプレート例
+## 💡 Template Examples
 
-### マークダウンリンク
+### Markdown Link
 ```
 [${selectionText}](${url})
 ```
 
-### 引用付きリンク
+### Link with Citation
 ```
 > ${selectionText}
 
 [${title}](${url})
 ```
 
-### HTML形式
+### HTML Format
 ```html
 <a href="${url}" title="${title}">${selectionText}</a>
 ```
 
-### メモ形式
+### Note Format
 ```
-【参考】${title}
-内容: ${selectionText}
+【Reference】${title}
+Content: ${selectionText}
 URL: ${url}
 ```
 
-### 箇条書き形式
+### Bullet Point Format
 ```
 - ${selectionText} - [${title}](${url})
 ```
 
 ---
 
-## 🛠️ 開発
+## 🛠️ Development
 
-### 必要な環境
+### Requirements
 
-- Node.js (v18以上推奨)
-- npm または yarn
+- Node.js (v18 or higher recommended)
+- npm or yarn
 
-### セットアップ
+### Setup
 
 ```bash
-# リポジトリのクローン
+# Clone the repository
 git clone https://github.com/Yuta-31/customCopy.git
 cd customCopy
 
-# 依存関係のインストール
+# Install dependencies
 npm install
 
-# 開発ビルド
+# Development build
 npm run build
 
-# 本番ビルド
+# Production build
 npm run build:prod
 ```
 
-**Chrome に拡張機能を追加:**
+**Add Extension to Chrome:**
 
-1. Chrome を開き、アドレスバーに `chrome://extensions/` と入力
-2. 右上の「デベロッパーモード」をオンに切り替え
-3. 「パッケージ化されていない拡張機能を読み込む」をクリック
-4. ビルドで生成された `dist` フォルダを選択
-5. 拡張機能が追加され、すぐに使用可能になります
+1. Open Chrome and enter `chrome://extensions/` in the address bar
+2. Toggle "Developer mode" in the upper right corner
+3. Click "Load unpacked"
+4. Select the `dist` folder generated by the build
+5. The extension will be added and available for immediate use
 
-### 技術スタック
+### Tech Stack
 
-- **フレームワーク**: React 18
-- **ビルドツール**: Vite 7
-- **言語**: TypeScript 5.9
-- **スタイリング**: Tailwind CSS 4
-- **UI コンポーネント**: shadcn/ui + Radix UI
-- **アイコン**: Lucide React
-- **テスト**: Vitest
-- **リント**: ESLint
+- **Framework**: React 18
+- **Build Tool**: Vite 7
+- **Language**: TypeScript 5.9
+- **Styling**: Tailwind CSS 4
+- **UI Components**: shadcn/ui + Radix UI
+- **Icons**: Lucide React
+- **Testing**: Vitest
+- **Linting**: ESLint
 
 ---
 
-## 📄 ライセンス
+## 📄 License
 
 MIT License
-public/LICENSE ファイルを参照してください。
+See the public/LICENSE file for details.
 
 ---
 
-## 🔗 リンク
+## 🔗 Links
 
 - [Chrome Web Store](https://chromewebstore.google.com/detail/custom-copy/mdkihjamcddnifdkigeigifgoafgkfbi)
 - [Issues](https://github.com/Yuta-31/customCopy/issues)
 
 ---
 
-## 📝 更新履歴
+## 📝 Changelog
 
 ### v2.1.0 (2025-12-30)
 
-- **キーボードショートカット機能**: Ctrl+Shift+1 ~ 4 のショートカットキーでスニペットを素早く実行可能に
-- **ダークモード対応**: システムテーマに対応し、ライト/ダークテーマの切り替えが可能に
-- **設定メニューの追加**: オプション画面にテーマ切り替えの設定メニューを実装
+- **Keyboard Shortcut Feature**: Quick snippet execution with Ctrl+Shift+1 ~ 4 shortcut keys
+- **Dark Mode Support**: System theme support with light/dark theme switching
+- **Settings Menu Addition**: Implemented theme switching settings menu on options page
 
-### v2.0.0 (2026-12-29)
+### v2.0.0 (2025-12-29)
 
-- **セクション見出しの抽出機能**: `${section}` 変数を追加し、選択したテキストの最も近い見出し（h1-h6）を取得可能に
-- **URL 変換ルール機能**: 正規表現を使用した URL の自動変換機能を追加
-- **UI の大幅リニューアル**: shadcn/ui を使用したモダンな UI デザインに刷新
-- **スニペットのインポート/エクスポート**: 設定のバックアップと他の環境への共有が可能に
-- **テストの追加**: ファイル処理、ストレージ、URL 変換、テンプレートに関する包括的なテストを実装
-- **ログ機能の強化**: デバッグとトラブルシューティングのための logging 機能を改善
+- **Section Heading Extraction**: Added `${section}` variable to retrieve the nearest heading (h1-h6) to selected text
+- **URL Transform Rules**: Added automatic URL conversion using regular expressions
+- **Major UI Redesign**: Refreshed with modern UI design using shadcn/ui
+- **Snippet Import/Export**: Settings backup and sharing to other environments
+- **Test Addition**: Comprehensive tests for file processing, storage, URL conversion, and templates
+- **Enhanced Logging**: Improved logging for debugging and troubleshooting
 
 ### v1.1.0 (2025-12-28)
 
-- オプション画面の UI 改善
-- パフォーマンスの最適化
-- クエリ削除機能の追加
-- React 18、Vite 7、TypeScript 5.9、Tailwind CSS 4 へ移行
+- Options page UI improvements
+- Performance optimization
+- Query deletion feature added
+- Migration to React 18, Vite 7, TypeScript 5.9, Tailwind CSS 4
 
-### v1.0.0 (初回リリース)
+### v1.0.0 (Initial Release)
 
-- 基本的なテンプレート機能
-- コンテキストメニューからのコピー
-- ページタイトル、URL、選択テキストの変数対応
-- オプション画面の実装
+- Basic template functionality
+- Copy from context menu
+- Variable support for page title, URL, and selected text
+- Options page implementation
