@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 テキストをコピーする際に、任意の形式に自動整形できるChrome拡張機能です。
@@ -201,6 +201,12 @@ public/LICENSE ファイルを参照してください。
 ---
 
 ## 📝 更新履歴
+
+### v2.1.0 (2025-12-30)
+
+- **キーボードショートカット機能**: Ctrl+Shift+1 ~ 4 のショートカットキーでスニペットを素早く実行可能に
+- **ダークモード対応**: システムテーマに対応し、ライト/ダークテーマの切り替えが可能に
+- **設定メニューの追加**: オプション画面にテーマ切り替えの設定メニューを実装
 
 ### v2.0.0 (2026-01-10)
 
