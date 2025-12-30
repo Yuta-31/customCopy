@@ -8,7 +8,7 @@ import { storage } from '@/lib/storage';
 import type { CustomCopySnippetContextMenu, URLTransformRule } from '@/types';
 
 const renderPreviewWithHighlight = (text: string) => {
-  if (!text) return <span className="text-gray-400 italic">Preview will be displayed here.</span>;
+  if (!text) return <span className="text-muted-foreground italic">Preview will be displayed here.</span>;
   
   const variables = [
     { pattern: '${title}', replacement: 'Page title will be inserted here.' },
@@ -17,7 +17,7 @@ const renderPreviewWithHighlight = (text: string) => {
     { pattern: '${section}', replacement: 'Section heading will be inserted here.' },
   ];
 
-  const highlightColor = 'bg-amber-100 text-amber-900';
+  const highlightColor = 'bg-amber-100 dark:bg-amber-900/30 text-amber-900 dark:text-amber-100';
   const parts: React.ReactNode[] = [];
   let remainingText = text;
   let key = 0;
@@ -138,23 +138,23 @@ export const SnippetCard = ({
       
         <section
           id="preview"
-          className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-          <div className="text-stone-500 text-xs font-semibold mb-2">Preview</div>
-          <div className="whitespace-pre-wrap text-stone-700 leading-relaxed">
+          className="mt-4 p-3 bg-muted/50 rounded-lg border">
+          <div className="text-muted-foreground text-xs font-semibold mb-2">Preview</div>
+          <div className="whitespace-pre-wrap text-foreground leading-relaxed">
             {renderPreviewWithHighlight(snippet.clipboardText)}
           </div>
         </section>
 
         <Accordion type="single" collapsible className="pt-1">
           <AccordionItem value="options">
-            <AccordionTrigger className="text-xs text-stone-600">
+            <AccordionTrigger className="text-xs text-foreground">
               Options
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-2">
               <div className="flex items-center justify-between pt-2 border-t">
                 <div className="flex flex-col">
                   <div className="text-sm">Keyboard Shortcut</div>
-                  <div className="text-xs text-stone-500">Assign Ctrl+Shift+[1-5]</div>
+                  <div className="text-xs text-muted-foreground">Assign Ctrl+Shift+[1-5]</div>
                 </div>
                 <select
                   value={snippet.shortcutNumber || ''}
@@ -162,7 +162,7 @@ export const SnippetCard = ({
                     const value = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
                     setSnippet(idx, 'shortcutNumber', value);
                   }}
-                  className="px-3 py-1.5 border rounded-md text-sm bg-white"
+                  className="px-3 py-1.5 border rounded-md text-sm bg-background"
                 >
                   <option value="">None</option>
                   <option value="1">Ctrl+Shift+1</option>
@@ -175,7 +175,7 @@ export const SnippetCard = ({
               
               {rules.length > 0 && (
                 <div className="flex flex-col gap-2 pt-2 border-t">
-                  <div className="text-xs text-stone-500 font-medium">URL Transform Rules</div>
+                  <div className="text-xs text-muted-foreground font-medium">URL Transform Rules</div>
                   {rules.map((rule) => (
                     <div key={rule.id} className="flex items-start gap-2">
                       <input
@@ -188,9 +188,9 @@ export const SnippetCard = ({
                       <label htmlFor={`rule-${rule.id}`} className="flex-1 cursor-pointer">
                         <div className="text-sm font-medium">{rule.title || 'Untitled Rule'}</div>
                         {rule.domain && (
-                          <div className="text-xs text-stone-500">Domain: {rule.domain}</div>
+                          <div className="text-xs text-muted-foreground">Domain: {rule.domain}</div>
                         )}
-                        <div className="text-xs text-stone-400 font-mono">
+                        <div className="text-xs text-muted-foreground/70 font-mono">
                           {rule.pattern} → {rule.replacement}
                         </div>
                       </label>

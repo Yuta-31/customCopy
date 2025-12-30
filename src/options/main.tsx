@@ -3,6 +3,8 @@ import { Download, Upload } from "lucide-react";
 import { Toaster } from 'sonner';
 import { Tabs, TabsTrigger, TabsList, TabsContent } from '@/components/ui/tabs';
 import { downloadJson } from '@/lib/file';
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { SnippetList } from './component/Snippet/SnippetList';
 import { SnippetListProvider } from './component/Snippet/SnippetListContext';
 import { TransformRuleList } from './component/TransformRule/TransformRuleList';
@@ -20,7 +22,7 @@ const AppContent = () => {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col bg-stone-200">
+    <div className="w-full h-screen flex flex-col bg-stone-200 dark:bg-stone-950">
       <Toaster position="top-right" />
       <Tabs defaultValue="snippets" className="flex-1">
         <div className="flex justify-between items-center pr-4">
@@ -29,6 +31,7 @@ const AppContent = () => {
             <TabsTrigger value="rules">URL Transform Rules</TabsTrigger>
           </TabsList>
           <div className="flex gap-2">
+            <ThemeToggle />
             <HoverExpandButton 
               icon={<Download />} 
               text="Export" 
@@ -57,11 +60,13 @@ const AppContent = () => {
 const App = () => {
   /* NOTE: SnippetListProvider depends on TransformRuleListContext, so it must be nested inside TransformRuleListProvider. Do not change this provider order. */
   return (
-    <TransformRuleListProvider>
-      <SnippetListProvider>
-        <AppContent />
-      </SnippetListProvider>
-    </TransformRuleListProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <TransformRuleListProvider>
+        <SnippetListProvider>
+          <AppContent />
+        </SnippetListProvider>
+      </TransformRuleListProvider>
+    </ThemeProvider>
   );
 };
 
