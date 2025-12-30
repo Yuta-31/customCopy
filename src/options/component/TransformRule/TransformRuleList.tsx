@@ -7,7 +7,7 @@ export const TransformRuleList = () => {
   const { rules } = useTransformRuleList();
 
   return (
-    <div className="w-full h-full flex flex-col gap-2 p-4 bg-stone-50">
+    <div className="w-full h-full flex flex-col gap-2 p-4 bg-stone-50 dark:bg-stone-900/50">
       <TransformRuleListHeader />
       {rules.length === 0 ? (
         <TransformRuleEmptyView />

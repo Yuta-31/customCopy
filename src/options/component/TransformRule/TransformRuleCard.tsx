@@ -80,7 +80,7 @@ export const TransformRuleCard = ({
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-stone-600">Domain (optional)</label>
+          <label className="text-xs text-muted-foreground">Domain (optional)</label>
           <input
             className="w-full px-2 py-1 text-sm border rounded"
             placeholder="e.g., support.microsoft.com"
@@ -89,13 +89,13 @@ export const TransformRuleCard = ({
               setRule(idx, 'domain', e.target.value);
             }}
           />
-          <div className="text-xs text-stone-400">
+          <div className="text-xs text-muted-foreground/70">
             Specify a domain to apply this rule only to that domain (leave blank to apply to all URLs)
           </div>
         </div>
         
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-stone-600">Pattern (Regular Expression)</label>
+          <label className="text-xs text-muted-foreground">Pattern (Regular Expression)</label>
           <input
             className="w-full px-2 py-1 text-sm border rounded font-mono"
             placeholder="e.g., ^(https://support\.microsoft\.com/[^/]+/[^/]+/).+?([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$"
@@ -107,7 +107,7 @@ export const TransformRuleCard = ({
         </div>
         
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-stone-600">Replacement (Replacement String)</label>
+          <label className="text-xs text-muted-foreground">Replacement (Replacement String)</label>
           <input
             className="w-full px-2 py-1 text-sm border rounded font-mono"
             placeholder="e.g., $1$2"
@@ -116,13 +116,13 @@ export const TransformRuleCard = ({
               setRule(idx, 'replacement', e.target.value);
             }}
           />
-          <div className="text-xs text-stone-400">
+          <div className="text-xs text-muted-foreground/70">
             Use $1, $2, etc. to reference capture groups
           </div>
         </div>
 
         <div className="flex flex-col gap-2 mt-2">
-          <label className="text-xs text-stone-600 font-semibold">Preview</label>
+          <label className="text-xs text-muted-foreground font-semibold">Preview</label>
           <input
             className="w-full px-2 py-1 text-sm border rounded"
             placeholder="Enter a test URL to see the transformation"
@@ -131,27 +131,27 @@ export const TransformRuleCard = ({
           />
           
           {testUrl && (
-            <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="p-3 bg-muted/50 rounded-lg border">
               <div className="flex flex-col gap-2">
                 <div className="flex items-start gap-2">
-                  <span className="text-xs text-stone-500 font-medium shrink-0">Input:</span>
-                  <span className="text-xs text-stone-700 font-mono break-all">{testUrl}</span>
+                  <span className="text-xs text-muted-foreground font-medium shrink-0">Input:</span>
+                  <span className="text-xs text-foreground font-mono break-all">{testUrl}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-xs text-stone-500 font-medium shrink-0">Output:</span>
-                  <span className={`text-xs font-mono break-all ${preview.success ? 'text-green-700' : 'text-stone-700'}`}>
+                  <span className="text-xs text-muted-foreground font-medium shrink-0">Output:</span>
+                  <span className={`text-xs font-mono break-all ${preview.success ? 'text-green-600 dark:text-green-400' : 'text-foreground'}`}>
                     {preview.result}
                   </span>
                 </div>
                 {preview.error && (
                   <div className="flex items-start gap-2">
-                    <span className="text-xs text-red-500 font-medium shrink-0">Error:</span>
-                    <span className="text-xs text-red-600">{preview.error}</span>
+                    <span className="text-xs text-destructive font-medium shrink-0">Error:</span>
+                    <span className="text-xs text-destructive">{preview.error}</span>
                   </div>
                 )}
                 {preview.success && preview.result !== testUrl && (
-                  <div className="mt-1 px-2 py-1 bg-green-50 border border-green-200 rounded">
-                    <span className="text-xs text-green-700 font-medium">✓ Transformation applied successfully</span>
+                  <div className="mt-1 px-2 py-1 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded">
+                    <span className="text-xs text-green-700 dark:text-green-400 font-medium">✓ Transformation applied successfully</span>
                   </div>
                 )}
               </div>

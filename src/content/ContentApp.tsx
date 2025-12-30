@@ -1,10 +1,39 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Toaster, toast } from 'sonner'
 import { contentLogger } from './lib/logger'
 import type { Message } from '@/types'
 
 export const ContentApp = () => {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
   useEffect(() => {
+    // Detect system/page theme
+    const detectTheme = () => {
+      const isDark = 
+        document.documentElement.classList.contains('dark') ||
+        document.body.classList.contains('dark') ||
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      setTheme(isDark ? 'dark' : 'light')
+    }
+
+    detectTheme()
+
+    // Watch for theme changes
+    const observer = new MutationObserver(detectTheme)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+
+    // Watch for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = () => detectTheme()
+    mediaQuery.addEventListener('change', handleChange)
+
     const messageListener = (
       message: Message,
       _sender: chrome.runtime.MessageSender,
@@ -38,10 +67,14 @@ export const ContentApp = () => {
 
     return () => {
       chrome.runtime.onMessage.removeListener(messageListener)
+      observer.disconnect()
+      mediaQuery.removeEventListener('change', handleChange)
     }
   }, [])
 
   return (
-    <Toaster position="top-right" />
+    <div className={theme}>
+      <Toaster position="top-right" />
+    </div>
   )
 }

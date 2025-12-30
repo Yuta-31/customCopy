@@ -9,7 +9,7 @@ export const SnippetList = () => {
   const { snippets } = useSnippetList();
 
   return (
-    <div className="w-full h-full flex gap-4 p-4 bg-stone-50">
+    <div className="w-full h-full flex gap-4 p-4 bg-stone-50 dark:bg-stone-900/50">
       <div className="flex-1 flex flex-col gap-2">
         <SnippetListHeader />
         {snippets.length > 0 ?
@@ -24,7 +24,7 @@ export const SnippetList = () => {
       </div>
       <div className="w-[300px] flex-shrink-0">
         <h3 className="text-xl font-bold mb-2">Available Variables</h3>
-        <div className="text-sm text-gray-600 mb-4">
+        <div className="text-sm text-muted-foreground mb-4">
           These variables will be replaced with page information.
         </div>
         <table className="w-full text-sm">
