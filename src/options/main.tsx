@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom/client";
 import { Download, Upload } from "lucide-react";
+import { Toaster } from 'sonner';
 import { Tabs, TabsTrigger, TabsList, TabsContent } from '@/components/ui/tabs';
 import { downloadJson } from '@/lib/file';
 import { SnippetList } from './component/Snippet/SnippetList';
@@ -20,6 +21,7 @@ const AppContent = () => {
 
   return (
     <div className="w-full h-screen flex flex-col bg-stone-200">
+      <Toaster position="top-right" />
       <Tabs defaultValue="snippets" className="flex-1">
         <div className="flex justify-between items-center pr-4">
           <TabsList>

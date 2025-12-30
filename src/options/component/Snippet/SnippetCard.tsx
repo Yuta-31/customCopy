@@ -79,6 +79,17 @@ export const SnippetCard = ({
       }
     };
     loadRules();
+    
+    // Watch for changes to transformRules
+    const unwatch = storage.watch<URLTransformRule[]>('transformRules', (updatedRules) => {
+      if (updatedRules && Array.isArray(updatedRules)) {
+        setRules(updatedRules);
+      }
+    });
+    
+    return () => {
+      unwatch();
+    };
   }, []);
 
   const toggleRule = (ruleId: string) => {

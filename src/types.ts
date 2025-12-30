@@ -68,7 +68,12 @@ export const isRuleEqual = (a: URLTransformRule, b: URLTransformRule): boolean =
 };
 
 // Compare snippets by content (excluding id)
-export const isSnippetEqual = (a: CustomCopySnippet | Omit<CustomCopySnippet, 'id'>, b: CustomCopySnippet | Omit<CustomCopySnippet, 'id'>): boolean => {
+export const isSnippetEqual = (
+  a: CustomCopySnippet | Omit<CustomCopySnippet, 'id'>, 
+  b: CustomCopySnippet | Omit<CustomCopySnippet, 'id'>,
+  rulesA?: URLTransformRule[],
+  rulesB?: URLTransformRule[]
+): boolean => {
   if (a.title !== b.title) return false;
   if (a.clipboardText !== b.clipboardText) return false;
   if (a.shortcutNumber !== b.shortcutNumber) return false;
@@ -80,14 +85,43 @@ export const isSnippetEqual = (a: CustomCopySnippet | Omit<CustomCopySnippet, 'i
     return false;
   } else if (a.enabledRuleIds.length !== b.enabledRuleIds.length) {
     return false;
-  } else if (!a.enabledRuleIds.every((id, idx) => id === b.enabledRuleIds![idx])) {
-    return false;
+  } else {
+    // If rules are provided, compare by rule content instead of ID
+    if (rulesA && rulesB) {
+      const rulesAMap = new Map(rulesA.map(r => [r.id, r]));
+      const rulesBMap = new Map(rulesB.map(r => [r.id, r]));
+      
+      for (let i = 0; i < a.enabledRuleIds.length; i++) {
+        const ruleA = rulesAMap.get(a.enabledRuleIds[i]);
+        const ruleB = rulesBMap.get(b.enabledRuleIds![i]);
+        
+        // If either rule is not found, fall back to ID comparison
+        if (!ruleA || !ruleB) {
+          if (a.enabledRuleIds[i] !== b.enabledRuleIds![i]) {
+            return false;
+          }
+        } else {
+          // Compare by rule content
+          if (!isRuleEqual(ruleA, ruleB)) {
+            return false;
+          }
+        }
+      }
+    } else {
+      // No rules provided, compare by ID only
+      if (!a.enabledRuleIds.every((id, idx) => id === b.enabledRuleIds![idx])) {
+        return false;
+      }
+    }
   }
   
-  // Check contexts array equality
+  // Check contexts array equality (order-independent)
   if (!a.contexts && !b.contexts) return true;
   if (!a.contexts || !b.contexts) return false;
   if (a.contexts.length !== b.contexts.length) return false;
   
-  return a.contexts.every((ctx, idx) => ctx === b.contexts![idx]);
+  // Sort contexts for order-independent comparison
+  const sortedA = [...a.contexts].sort();
+  const sortedB = [...b.contexts].sort();
+  return sortedA.every((ctx, idx) => ctx === sortedB[idx]);
 };

@@ -10,7 +10,7 @@ export type TransformRuleListContextType = {
   rules: URLTransformRule[];
   setRules: (rules: URLTransformRule[]) => void;
   exportRules: () => URLTransformRule[];
-  importRules: (importedRules: URLTransformRule[]) => Map<string, string>;
+  importRules: (importedRules: URLTransformRule[]) => { idMapping: Map<string, string>; newRulesCount: number; allRules: URLTransformRule[] };
 };
 
 export const TransformRuleListContext = createContext<TransformRuleListContextType | undefined>(
@@ -54,7 +54,7 @@ export const TransformRuleListProvider = ({ children }: { children: React.ReactN
     return rules;
   };
 
-  const importRules = (importedRules: URLTransformRule[]): Map<string, string> => {
+  const importRules = (importedRules: URLTransformRule[]): { idMapping: Map<string, string>; newRulesCount: number; allRules: URLTransformRule[] } => {
     // Map from imported rule id to existing/new rule id
     const idMapping = new Map<string, string>();
     const newRulesToAdd: URLTransformRule[] = [];
@@ -77,12 +77,15 @@ export const TransformRuleListProvider = ({ children }: { children: React.ReactN
       }
     }
     
+    // Calculate new rules array
+    const allRules = [...rules, ...newRulesToAdd];
+    
     // Add new rules
     if (newRulesToAdd.length > 0) {
-      setRules([...rules, ...newRulesToAdd]);
+      setRules(allRules);
     }
     
-    return idMapping;
+    return { idMapping, newRulesCount: newRulesToAdd.length, allRules };
   };
 
   return (

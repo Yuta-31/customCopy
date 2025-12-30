@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext, type ReactNode } from 'react';
+import { toast } from 'sonner';
 import { storage } from '@/lib/storage';
 import { pickJsonFile } from '@/lib/file';
 import { toCustomCopySnippet, isSnippetEqual, generateSnippetId } from '@/types';
@@ -152,7 +153,10 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
       }
 
       // First, import rules and get id mapping
-      const ruleIdMapping = importRules(importedRules);
+      const { idMapping: ruleIdMapping, newRulesCount, allRules: updatedRules } = importRules(importedRules);
+      
+      // Use the updated rules list (includes newly imported rules)
+      const existingRules = updatedRules;
       
       // TODO: do validation
       const existingSnippets = snippets.map(toCustomCopySnippet);
@@ -163,7 +167,7 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
       const newSnippets: CustomCopySnippetContextMenu[] = importedSnippets
         .filter((importedSnippet) => {
           const isDuplicate = existingSnippets.some((existing) => 
-            isSnippetEqual(existing, importedSnippet)
+            isSnippetEqual(existing, importedSnippet, existingRules, importedRules)
           );
           return !isDuplicate;
         })
@@ -193,48 +197,67 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
 
       const duplicateCount = importedSnippets.length - newSnippets.length;
       const importedRuleCount = importedRules.length;
-      const newRuleCount = Array.from(ruleIdMapping.values()).filter((newId, index) => {
-        const oldId = Array.from(ruleIdMapping.keys())[index];
-        return newId !== oldId || !importedRules.find(r => r.id === oldId);
-      }).length;
-      
-      if (duplicateCount > 0) {
-        snippetLogger.info('Duplicates skipped', { count: duplicateCount });
-      }
+      const duplicateRuleCount = importedRuleCount - newRulesCount;
       
       setSnippets([...snippets, ...newSnippets]);
       snippetLogger.info('Import completed successfully', { 
         importedSnippets: newSnippets.length, 
         skippedSnippets: duplicateCount,
-        importedRules: importedRuleCount,
-        newRules: newRuleCount,
+        importedRules: newRulesCount,
+        skippedRules: duplicateRuleCount,
         totalSnippets: snippets.length + newSnippets.length 
       });
 
-      if (duplicateCount > 0 || importedRuleCount > 0) {
+      // Show import results
+      const hasNewItems = newSnippets.length > 0 || newRulesCount > 0;
+      const hasAnyItems = hasNewItems || duplicateCount > 0 || duplicateRuleCount > 0;
+      
+      if (hasAnyItems) {
         const messages = [];
         if (newSnippets.length > 0) {
-          messages.push(`Imported ${newSnippets.length} snippet(s)`);
+          messages.push(`✓ Imported ${newSnippets.length} snippet(s)`);
         }
         if (duplicateCount > 0) {
-          messages.push(`Skipped ${duplicateCount} duplicate snippet(s)`);
+          messages.push(`⊘ Skipped ${duplicateCount} duplicate snippet(s)`);
         }
-        if (importedRuleCount > 0) {
-          const duplicateRules = importedRuleCount - newRuleCount;
-          messages.push(`Imported ${newRuleCount} new rule(s)`);
-          if (duplicateRules > 0) {
-            messages.push(`Mapped ${duplicateRules} duplicate rule(s) to existing rules`);
-          }
+        if (newRulesCount > 0) {
+          messages.push(`✓ Imported ${newRulesCount} new rule(s)`);
         }
-        alert(messages.join('\n'));
+        if (duplicateRuleCount > 0) {
+          messages.push(`⊘ Skipped ${duplicateRuleCount} duplicate rule(s)`);
+        }
+        
+        // Show success if at least one new item was imported, otherwise warning
+        if (hasNewItems) {
+          toast.success('Import completed', {
+            description: messages.join('\n'),
+            duration: 5000,
+          });
+        } else {
+          toast.warning('Items skipped', {
+            description: messages.join('\n'),
+            duration: 4000,
+          });
+        }
+      } else {
+        toast.info('No items to import', {
+          description: 'The file is empty or invalid',
+          duration: 3000,
+        });
       }
 
     } catch (e) {
       snippetLogger.error('Upload failed', e);
       if (e instanceof SyntaxError) {
-        alert('Failed to import: Invalid JSON file format');
+        toast.error('Failed to import', {
+          description: 'Invalid JSON file format',
+          duration: 4000,
+        });
       } else {
-        alert('Failed to load JSON. Please check the file content.');
+        toast.error('Failed to import', {
+          description: 'Please check the file content',
+          duration: 4000,
+        });
       }
     }
   };

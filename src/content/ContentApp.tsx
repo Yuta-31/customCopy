@@ -42,15 +42,6 @@ export const ContentApp = () => {
   }, [])
 
   return (
-    <Toaster 
-      position="top-right"
-      toastOptions={{
-        style: {
-          background: '#7c3aed',
-          color: 'white',
-          border: 'none',
-        },
-      }}
-    />
+    <Toaster position="top-right" />
   )
 }
