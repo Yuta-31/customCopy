@@ -198,6 +198,8 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
         });
 
       const mappedRuleCount = importedRules.length - newRulesCount;
+      const duplicateCount = importedSnippets.length - newSnippets.length;
+      const duplicateRuleCount = 0; // Rules are merged, not counted as duplicates
       
       setSnippets([...snippets, ...newSnippets]);
       snippetLogger.info('Import completed successfully', { 
@@ -210,9 +212,7 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
 
       // Show import results
       const hasNewItems = newSnippets.length > 0 || newRulesCount > 0;
-      const hasAnyItems = hasNewItems || duplicateCount > 0 || mappedRuleCount > 0;
-      const hasNewItems = newSnippets.length > 0 || newRulesCount > 0;
-      const hasAnyItems = hasNewItems || duplicateCount > 0 || duplicateRuleCount > 0;
+      const hasAnyItems = hasNewItems || duplicateCount > 0 || mappedRuleCount > 0 || duplicateRuleCount > 0;
       
       if (hasAnyItems) {
         const messages = [];
