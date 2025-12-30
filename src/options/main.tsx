@@ -4,7 +4,7 @@ import { Toaster } from 'sonner';
 import { Tabs, TabsTrigger, TabsList, TabsContent } from '@/components/ui/tabs';
 import { downloadJson } from '@/lib/file';
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SettingsMenu } from "@/components/settings-menu";
 import { SnippetList } from './component/Snippet/SnippetList';
 import { SnippetListProvider } from './component/Snippet/SnippetListContext';
 import { TransformRuleList } from './component/TransformRule/TransformRuleList';
@@ -31,7 +31,6 @@ const AppContent = () => {
             <TabsTrigger value="rules">URL Transform Rules</TabsTrigger>
           </TabsList>
           <div className="flex gap-2">
-            <ThemeToggle />
             <HoverExpandButton 
               icon={<Download />} 
               text="Export" 
@@ -43,6 +42,7 @@ const AppContent = () => {
               text="Import" 
               onClick={importSnippets} 
             />
+            <SettingsMenu />
           </div>
         </div>
         <TabsContent value="snippets" className="mt-0">
