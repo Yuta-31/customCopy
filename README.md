@@ -189,6 +189,7 @@ npm run build:prod
 ## 📄 ライセンス
 
 MIT License
+public/LICENSE ファイルを参照してください。
 
 ---
 
