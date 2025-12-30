@@ -5,7 +5,7 @@
   "manifest_version": 3,
   "version": "2.1.0",
   "name": "Custom Copy",
-  "description": "コピーするときに任意の形式に整形できます。",
+  "description": "Automatically format copied text into any desired format.",
   "author": "yuta.ide.gt@outlook.jp",
   "permissions": [
     "storage",
