@@ -1,5 +1,5 @@
 import { storage } from "@/lib/storage"
-import { stripQuery, transformUrl, extractSectionHeading } from "@/lib/url"
+import { transformUrl, extractSectionHeading } from "@/lib/url"
 import { backgroundLogger } from "@/background/lib/logger"
 import { handleContextMenu } from "./messages/contextMenu"
 import { logging } from "./messages/logger"
@@ -26,9 +26,6 @@ async function executeSnippet(
   
   // replace text
   let url = tab.url ?? ""
-  if (snippet.deleteQuery) {
-    url = stripQuery(url)
-  }
   
   // Apply enabled transform rules
   if (snippet.enabledRuleIds && snippet.enabledRuleIds.length > 0) {
@@ -60,7 +57,6 @@ async function executeSnippet(
   }
   
   backgroundLogger.debug("Executing snippet", { 
-    deleteQuery: snippet.deleteQuery, 
     enabledRuleIds: snippet.enabledRuleIds,
     url 
   })

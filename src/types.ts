@@ -28,7 +28,6 @@ export type CustomCopySnippet = {
   id: string
   title: string
   clipboardText: string
-  deleteQuery?: boolean | undefined
   enabledRuleIds?: string[] | undefined
   contexts?: [`${chrome.contextMenus.ContextType}`, ...`${chrome.contextMenus.ContextType}`[]];
   shortcutNumber?: number | undefined // 1-5 for Ctrl+Shift+1 through Ctrl+Shift+5
@@ -53,7 +52,6 @@ export const toCustomCopySnippet = (snippet: CustomCopySnippetContextMenu): Cust
     id: snippet.id as string,
     title: snippet.title,
     clipboardText: snippet.clipboardText,
-    deleteQuery: snippet.deleteQuery,
     enabledRuleIds: snippet.enabledRuleIds,
     contexts: snippet.contexts,
     shortcutNumber: snippet.shortcutNumber,
@@ -73,7 +71,6 @@ export const isRuleEqual = (a: URLTransformRule, b: URLTransformRule): boolean =
 export const isSnippetEqual = (a: CustomCopySnippet | Omit<CustomCopySnippet, 'id'>, b: CustomCopySnippet | Omit<CustomCopySnippet, 'id'>): boolean => {
   if (a.title !== b.title) return false;
   if (a.clipboardText !== b.clipboardText) return false;
-  if (a.deleteQuery !== b.deleteQuery) return false;
   if (a.shortcutNumber !== b.shortcutNumber) return false;
   
   // Check enabledRuleIds array equality

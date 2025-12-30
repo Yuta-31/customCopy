@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Switch } from '@/components/ui/switch';
 import { useSnippetList } from '@/options/hooks/useSnippetList';
 import { storage } from '@/lib/storage';
 import type { CustomCopySnippetContextMenu, URLTransformRule } from '@/types';
@@ -141,13 +140,6 @@ export const SnippetCard = ({
               Options
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <div>delete query</div>
-                <Switch checked={snippet.deleteQuery} onCheckedChange={(checked) => {
-                  setSnippet(idx, 'deleteQuery', checked);
-                }} />
-              </div>
-              
               <div className="flex items-center justify-between pt-2 border-t">
                 <div className="flex flex-col">
                   <div className="text-sm">Keyboard Shortcut</div>

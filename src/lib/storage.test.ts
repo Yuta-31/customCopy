@@ -2,7 +2,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { storage } from './storage'
-import type { StorageKey } from '@/types'
+import type { StorageKey } from '../types'
 
 // Mock the logger module
 vi.mock('@/lib/logger', () => ({
@@ -18,11 +18,6 @@ describe('Storage', () => {
   beforeEach(() => {
     // Reset mocks before each test
     vi.clearAllMocks()
-    
-    // Reset chrome.runtime.lastError
-    if (global.chrome && global.chrome.runtime) {
-      global.chrome.runtime.lastError = undefined
-    }
   })
 
   afterEach(() => {
@@ -34,31 +29,41 @@ describe('Storage', () => {
       const testKey: StorageKey = 'contextMenus'
       const testValue = [{ id: '1', title: 'Test' }]
 
-      vi.mocked(chrome.storage.sync.get).mockImplementation((keys: string[], callback: (items: { [key: string]: unknown }) => void) => {
+      vi.mocked(chrome.storage.local.get).mockImplementation((keys, callback) => {
         callback({ [testKey]: testValue })
       })
 
       const result = await storage.get(testKey)
       expect(result).toEqual(testValue)
-      expect(chrome.storage.sync.get).toHaveBeenCalledWith([testKey], expect.any(Function))
+      expect(chrome.storage.local.get).toHaveBeenCalledWith([testKey], expect.any(Function))
     })
 
     it('should handle storage errors', async () => {
       const testKey: StorageKey = 'contextMenus'
-      const testError = new Error('Storage error')
+      const testError = { message: 'Storage error' }
 
-      vi.mocked(chrome.storage.sync.get).mockImplementation((keys: string[], callback: (items: { [key: string]: unknown }) => void) => {
-        chrome.runtime.lastError = testError as chrome.runtime.LastError
+      vi.mocked(chrome.storage.local.get).mockImplementation((keys, callback) => {
+        // Simulate lastError by making it available in the callback
+        Object.defineProperty(chrome.runtime, 'lastError', {
+          get: () => testError,
+          configurable: true,
+        })
         callback({})
       })
 
-      await expect(storage.get(testKey)).rejects.toThrow()
+      await expect(storage.get(testKey)).rejects.toEqual(testError)
+      
+      // Clean up
+      Object.defineProperty(chrome.runtime, 'lastError', {
+        get: () => undefined,
+        configurable: true,
+      })
     })
 
     it('should handle exceptions during get', async () => {
       const testKey: StorageKey = 'contextMenus'
 
-      vi.mocked(chrome.storage.sync.get).mockImplementation(() => {
+      vi.mocked(chrome.storage.local.get).mockImplementation(() => {
         throw new Error('Exception during get')
       })
 
@@ -68,7 +73,7 @@ describe('Storage', () => {
     it('should return undefined for non-existent key', async () => {
       const testKey: StorageKey = 'contextMenus'
 
-      vi.mocked(chrome.storage.sync.get).mockImplementation((keys: string[], callback: (items: { [key: string]: unknown }) => void) => {
+      vi.mocked(chrome.storage.local.get).mockImplementation((keys, callback) => {
         callback({})
       })
 
@@ -82,12 +87,12 @@ describe('Storage', () => {
       const testKey: StorageKey = 'contextMenus'
       const testValue = [{ id: '1', title: 'Test' }]
 
-      vi.mocked(chrome.storage.sync.set).mockImplementation((items: { [key: string]: unknown }, callback: () => void) => {
+      vi.mocked(chrome.storage.local.set).mockImplementation((items, callback) => {
         callback()
       })
 
       await storage.set(testKey, testValue)
-      expect(chrome.storage.sync.set).toHaveBeenCalledWith(
+      expect(chrome.storage.local.set).toHaveBeenCalledWith(
         { [testKey]: testValue },
         expect.any(Function)
       )
@@ -96,21 +101,30 @@ describe('Storage', () => {
     it('should handle storage errors during set', async () => {
       const testKey: StorageKey = 'contextMenus'
       const testValue = [{ id: '1', title: 'Test' }]
-      const testError = new Error('Storage quota exceeded')
+      const testError = { message: 'Storage quota exceeded' }
 
-      vi.mocked(chrome.storage.sync.set).mockImplementation((items: { [key: string]: unknown }, callback: () => void) => {
-        chrome.runtime.lastError = testError as chrome.runtime.LastError
+      vi.mocked(chrome.storage.local.set).mockImplementation((items, callback) => {
+        Object.defineProperty(chrome.runtime, 'lastError', {
+          get: () => testError,
+          configurable: true,
+        })
         callback()
       })
 
-      await expect(storage.set(testKey, testValue)).rejects.toThrow()
+      await expect(storage.set(testKey, testValue)).rejects.toEqual(testError)
+      
+      // Clean up
+      Object.defineProperty(chrome.runtime, 'lastError', {
+        get: () => undefined,
+        configurable: true,
+      })
     })
 
     it('should handle exceptions during set', async () => {
       const testKey: StorageKey = 'contextMenus'
       const testValue = [{ id: '1', title: 'Test' }]
 
-      vi.mocked(chrome.storage.sync.set).mockImplementation(() => {
+      vi.mocked(chrome.storage.local.set).mockImplementation(() => {
         throw new Error('Exception during set')
       })
 
@@ -122,41 +136,50 @@ describe('Storage', () => {
     it('should remove single key from storage', async () => {
       const testKey = 'contextMenus'
 
-      vi.mocked(chrome.storage.sync.remove).mockImplementation((key: string | string[], callback: () => void) => {
+      vi.mocked(chrome.storage.local.remove).mockImplementation((key, callback) => {
         callback()
       })
 
       await storage.remove(testKey)
-      expect(chrome.storage.sync.remove).toHaveBeenCalledWith(testKey, expect.any(Function))
+      expect(chrome.storage.local.remove).toHaveBeenCalledWith(testKey, expect.any(Function))
     })
 
     it('should remove multiple keys from storage', async () => {
       const testKeys = ['contextMenus', 'transformRules']
 
-      vi.mocked(chrome.storage.sync.remove).mockImplementation((keys: string | string[], callback: () => void) => {
+      vi.mocked(chrome.storage.local.remove).mockImplementation((keys, callback) => {
         callback()
       })
 
       await storage.remove(testKeys)
-      expect(chrome.storage.sync.remove).toHaveBeenCalledWith(testKeys, expect.any(Function))
+      expect(chrome.storage.local.remove).toHaveBeenCalledWith(testKeys, expect.any(Function))
     })
 
     it('should handle storage errors during remove', async () => {
       const testKey = 'contextMenus'
-      const testError = new Error('Storage error')
+      const testError = { message: 'Storage error' }
 
-      vi.mocked(chrome.storage.sync.remove).mockImplementation((key: string | string[], callback: () => void) => {
-        chrome.runtime.lastError = testError as chrome.runtime.LastError
+      vi.mocked(chrome.storage.local.remove).mockImplementation((key, callback) => {
+        Object.defineProperty(chrome.runtime, 'lastError', {
+          get: () => testError,
+          configurable: true,
+        })
         callback()
       })
 
-      await expect(storage.remove(testKey)).rejects.toThrow()
+      await expect(storage.remove(testKey)).rejects.toEqual(testError)
+      
+      // Clean up
+      Object.defineProperty(chrome.runtime, 'lastError', {
+        get: () => undefined,
+        configurable: true,
+      })
     })
 
     it('should handle exceptions during remove', async () => {
       const testKey = 'contextMenus'
 
-      vi.mocked(chrome.storage.sync.remove).mockImplementation(() => {
+      vi.mocked(chrome.storage.local.remove).mockImplementation(() => {
         throw new Error('Exception during remove')
       })
 
@@ -180,8 +203,8 @@ describe('Storage', () => {
       const testValue = [{ id: '1', title: 'Updated' }]
       const callback = vi.fn()
 
-      let storageListener: ((changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) | null = null
-      vi.mocked(chrome.storage.onChanged.addListener).mockImplementation((listener: (changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) => {
+      let storageListener: ((changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) | undefined
+      vi.mocked(chrome.storage.onChanged.addListener).mockImplementation((listener) => {
         storageListener = listener
       })
 
@@ -194,7 +217,7 @@ describe('Storage', () => {
           oldValue: null,
         },
       }
-      storageListener?.(changes, 'sync')
+      storageListener?.(changes, 'local')
 
       expect(callback).toHaveBeenCalledWith(testValue)
     })
@@ -203,8 +226,8 @@ describe('Storage', () => {
       const testKey: StorageKey = 'contextMenus'
       const callback = vi.fn()
 
-      let storageListener: ((changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) | null = null
-      vi.mocked(chrome.storage.onChanged.addListener).mockImplementation((listener: (changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) => {
+      let storageListener: ((changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) | undefined
+      vi.mocked(chrome.storage.onChanged.addListener).mockImplementation((listener) => {
         storageListener = listener
       })
 
@@ -217,31 +240,31 @@ describe('Storage', () => {
           oldValue: null,
         },
       }
-      storageListener?.(changes, 'sync')
+      storageListener?.(changes, 'local')
 
       expect(callback).not.toHaveBeenCalled()
     })
 
-    it('should not invoke callback for non-sync area', () => {
+    it('should not invoke callback for non-local area', () => {
       const testKey: StorageKey = 'contextMenus'
       const testValue = [{ id: '1', title: 'Updated' }]
       const callback = vi.fn()
 
-      let storageListener: ((changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) | null = null
-      vi.mocked(chrome.storage.onChanged.addListener).mockImplementation((listener: (changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) => {
+      let storageListener: ((changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) | undefined
+      vi.mocked(chrome.storage.onChanged.addListener).mockImplementation((listener) => {
         storageListener = listener
       })
 
       storage.watch(testKey, callback)
 
-      // Simulate storage change in local area (not sync)
+      // Simulate storage change in sync area (not local)
       const changes = {
         [testKey]: {
           newValue: testValue,
           oldValue: null,
         },
       }
-      storageListener?.(changes, 'local')
+      storageListener?.(changes, 'sync')
 
       expect(callback).not.toHaveBeenCalled()
     })
@@ -250,8 +273,8 @@ describe('Storage', () => {
       const testKey: StorageKey = 'contextMenus'
       const callback = vi.fn()
 
-      let storageListener: ((changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) | null = null
-      vi.mocked(chrome.storage.onChanged.addListener).mockImplementation((listener: (changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) => {
+      let storageListener: ((changes: { [key: string]: chrome.storage.StorageChange }, areaName: chrome.storage.AreaName) => void) | undefined
+      vi.mocked(chrome.storage.onChanged.addListener).mockImplementation((listener) => {
         storageListener = listener
       })
 
@@ -264,7 +287,7 @@ describe('Storage', () => {
           oldValue: ['old value'],
         },
       }
-      storageListener?.(changes, 'sync')
+      storageListener?.(changes, 'local')
 
       expect(callback).toHaveBeenCalledWith(null)
     })

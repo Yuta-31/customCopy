@@ -42,7 +42,6 @@ describe('toCustomCopySnippet', () => {
       id: 'test-id',
       title: 'Test Snippet',
       clipboardText: '${title} - ${url}',
-      deleteQuery: true,
       enabledRuleIds: ['rule1', 'rule2'],
       contexts: ['selection'],
     }
@@ -53,7 +52,6 @@ describe('toCustomCopySnippet', () => {
       id: 'test-id',
       title: 'Test Snippet',
       clipboardText: '${title} - ${url}',
-      deleteQuery: true,
       enabledRuleIds: ['rule1', 'rule2'],
       contexts: ['selection'],
     })
@@ -72,7 +70,6 @@ describe('toCustomCopySnippet', () => {
       id: 'test-id',
       title: 'Simple Snippet',
       clipboardText: '${selectionText}',
-      deleteQuery: undefined,
       enabledRuleIds: undefined,
       contexts: undefined,
     })
@@ -140,7 +137,6 @@ describe('isSnippetEqual', () => {
     id: 'snippet1',
     title: 'Test Snippet',
     clipboardText: '[${title}](${url})',
-    deleteQuery: true,
     enabledRuleIds: ['rule1', 'rule2'],
     contexts: ['selection'],
   }
@@ -160,12 +156,6 @@ describe('isSnippetEqual', () => {
   it('should return false when clipboardText differs', () => {
     const snippet1 = { ...baseSnippet }
     const snippet2 = { ...baseSnippet, clipboardText: 'Different text' }
-    expect(isSnippetEqual(snippet1, snippet2)).toBe(false)
-  })
-
-  it('should return false when deleteQuery differs', () => {
-    const snippet1 = { ...baseSnippet }
-    const snippet2 = { ...baseSnippet, deleteQuery: false }
     expect(isSnippetEqual(snippet1, snippet2)).toBe(false)
   })
 
@@ -246,14 +236,14 @@ describe('isSnippetEqual', () => {
   })
 
   it('should return false when contexts have different lengths', () => {
-    const snippet1 = { ...baseSnippet, contexts: ['selection'] }
-    const snippet2 = { ...baseSnippet, contexts: ['selection', 'link'] }
-    expect(isSnippetEqual(snippet1, snippet2 as CustomCopySnippet)).toBe(false)
+    const snippet1 = { ...baseSnippet, contexts: ['selection'] as [`${chrome.contextMenus.ContextType}`, ...`${chrome.contextMenus.ContextType}`[]] }
+    const snippet2 = { ...baseSnippet, contexts: ['selection', 'link'] as [`${chrome.contextMenus.ContextType}`, ...`${chrome.contextMenus.ContextType}`[]] }
+    expect(isSnippetEqual(snippet1, snippet2)).toBe(false)
   })
 
   it('should return false when contexts have different values', () => {
-    const snippet1 = { ...baseSnippet, contexts: ['selection'] }
-    const snippet2 = { ...baseSnippet, contexts: ['link'] }
-    expect(isSnippetEqual(snippet1, snippet2 as CustomCopySnippet)).toBe(false)
+    const snippet1 = { ...baseSnippet, contexts: ['selection'] as [`${chrome.contextMenus.ContextType}`, ...`${chrome.contextMenus.ContextType}`[]] }
+    const snippet2 = { ...baseSnippet, contexts: ['link'] as [`${chrome.contextMenus.ContextType}`, ...`${chrome.contextMenus.ContextType}`[]] }
+    expect(isSnippetEqual(snippet1, snippet2)).toBe(false)
   })
 })
