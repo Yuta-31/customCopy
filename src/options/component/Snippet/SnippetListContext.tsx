@@ -8,13 +8,15 @@ import { snippetLogger } from '@/options/lib/logger';
 import { formatSnippet } from '@/options/lib/utils';
 import type { CustomCopySnippetContextMenu, CustomCopySnippet, ExportData, URLTransformRule } from '@/types';
 
+type SnippetPropertyValue = string | string[] | boolean | number | undefined;
+
 interface SnippetListContextType {
   snippets: Array<CustomCopySnippetContextMenu>;
   setSnippets: (snippets: Array<CustomCopySnippetContextMenu>) => void;
   setSnippet: (
     idx: number,
     key: keyof CustomCopySnippetContextMenu,
-    value: string | string[] | boolean | number | undefined
+    value: SnippetPropertyValue
   ) => void;
   deleteSnippet: (idx: number) => void;
   createEmptySnippet: () => void;
@@ -195,20 +197,20 @@ export const SnippetListProvider = ({ children }: SnippetListProviderProps) => {
           };
         });
 
-      const duplicateCount = importedSnippets.length - newSnippets.length;
-      const importedRuleCount = importedRules.length;
-      const duplicateRuleCount = importedRuleCount - newRulesCount;
+      const mappedRuleCount = importedRules.length - newRulesCount;
       
       setSnippets([...snippets, ...newSnippets]);
       snippetLogger.info('Import completed successfully', { 
         importedSnippets: newSnippets.length, 
         skippedSnippets: duplicateCount,
         importedRules: newRulesCount,
-        skippedRules: duplicateRuleCount,
+        skippedRules: mappedRuleCount,
         totalSnippets: snippets.length + newSnippets.length 
       });
 
       // Show import results
+      const hasNewItems = newSnippets.length > 0 || newRulesCount > 0;
+      const hasAnyItems = hasNewItems || duplicateCount > 0 || mappedRuleCount > 0;
       const hasNewItems = newSnippets.length > 0 || newRulesCount > 0;
       const hasAnyItems = hasNewItems || duplicateCount > 0 || duplicateRuleCount > 0;
       

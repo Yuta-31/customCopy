@@ -3,7 +3,18 @@ export type MessageType = "relay" | "contextMenu" | "logger" | "getSectionHeadin
 
 export type MessageData = 
   | { type: "relay"; command: string; data?: unknown }
-  | { type: "contextMenu"; command: "on-load" | "on-click"; data?: { replacedText?: string; snippetTitle?: string } }
+  | {
+      type: "contextMenu";
+      command: "on-load" | "on-click";
+      data?: {
+        replacedText?: string;
+        /**
+         * Optional human-readable title for the snippet that will be shown
+         * in the user-facing toast notification.
+         */
+        snippetTitle?: string;
+      };
+    }
   | { type: "logger"; command: "info" | "warn" | "error"; data: { message: string; args: unknown[] } }
   | { type: "getSectionHeading"; command: "request"; data?: { sectionId: string } }
   | { type: "getSelection"; command: "request"; data?: never }
@@ -109,7 +120,7 @@ export const isSnippetEqual = (
       }
     } else {
       // No rules provided, compare by ID only
-      if (!a.enabledRuleIds.every((id, idx) => id === b.enabledRuleIds![idx])) {
+      if (!a.enabledRuleIds.every((id, idx) => id === b.enabledRuleIds?.[idx])) {
         return false;
       }
     }

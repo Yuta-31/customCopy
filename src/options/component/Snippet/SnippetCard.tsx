@@ -169,7 +169,6 @@ export const SnippetCard = ({
                   <option value="2">Ctrl+Shift+2</option>
                   <option value="3">Ctrl+Shift+3</option>
                   <option value="4">Ctrl+Shift+4</option>
-                  <option value="5">Ctrl+Shift+5</option>
                 </select>
               </div>
               
