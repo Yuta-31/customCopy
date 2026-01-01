@@ -4,6 +4,7 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useSnippetList } from '@/options/hooks/useSnippetList';
+import { useCommands } from '@/options/hooks/useCommands';
 import { storage } from '@/lib/storage';
 import type { CustomCopySnippetContextMenu, URLTransformRule } from '@/types';
 
@@ -68,6 +69,7 @@ export const SnippetCard = ({
   snippet: CustomCopySnippetContextMenu;
 }) => {
   const { setSnippet, deleteSnippet } = useSnippetList();
+  const { getShortcutForSnippet } = useCommands();
   const [rules, setRules] = useState<URLTransformRule[]>([]);
   const [isDeleteHovered, setIsDeleteHovered] = useState(false);
 
@@ -154,7 +156,7 @@ export const SnippetCard = ({
               <div className="flex items-center justify-between pt-2 border-t">
                 <div className="flex flex-col">
                   <div className="text-sm">Keyboard Shortcut</div>
-                  <div className="text-xs text-muted-foreground">Assign Ctrl+Shift+[1-5]</div>
+                  <div className="text-xs text-muted-foreground">Assign keyboard shortcut</div>
                 </div>
                 <select
                   value={snippet.shortcutNumber || ''}
@@ -165,10 +167,15 @@ export const SnippetCard = ({
                   className="px-3 py-1.5 border rounded-md text-sm bg-background"
                 >
                   <option value="">None</option>
-                  <option value="1">Ctrl+Shift+1</option>
-                  <option value="2">Ctrl+Shift+2</option>
-                  <option value="3">Ctrl+Shift+3</option>
-                  <option value="4">Ctrl+Shift+4</option>
+                  {[1, 2, 3, 4].map((num) => {
+                    const actualShortcut = getShortcutForSnippet(num);
+                    const displayText = actualShortcut || 'Not set';
+                    return (
+                      <option key={num} value={num}>
+                        {displayText}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
               

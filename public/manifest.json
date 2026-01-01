@@ -3,7 +3,7 @@
     "128": "icon128.png"
   },
   "manifest_version": 3,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "name": "Custom Copy",
   "description": "Automatically format copied text into any desired format.",
   "author": "yuta.ide.gt@outlook.jp",
