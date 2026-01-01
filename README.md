@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 A Chrome extension that automatically formats text into any desired format when copying.
@@ -203,6 +203,10 @@ See the public/LICENSE file for details.
 ---
 
 ## 📝 Changelog
+
+### v2.1.1 (2026-01-01)
+
+- **Shortcut Key Display**: Display actual registered shortcut keys in the snippet list dropdown
 
 ### v2.1.0 (2025-12-30)
 

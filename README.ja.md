@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 テキストをコピーする際に、任意の形式に自動整形できるChrome拡張機能です。
@@ -201,6 +201,10 @@ public/LICENSE ファイルを参照してください。
 ---
 
 ## 📝 更新履歴
+
+### v2.1.1 (2026-01-01)
+
+- **ショートカットキー表示の改善**: スニペットリストのドロップダウンに実際に登録されているショートカットキーを表示
 
 ### v2.1.0 (2025-12-30)
 
